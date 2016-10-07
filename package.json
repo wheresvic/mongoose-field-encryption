@@ -1,6 +1,6 @@
 {
   "name": "mongoose-field-encryption",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple symmetric encryption plugin for fields with string values.",
   "main": "lib/mongoose-field-encryption.js",
   "files": [
