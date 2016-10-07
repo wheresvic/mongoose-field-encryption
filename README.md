@@ -1,5 +1,7 @@
 # mongoose-field-encryption
 
+[![Build Status](https://travis-ci.org/victorparmar/mongoose-field-encryption.svg?branch=master)](https://travis-ci.org/victorparmar/mongoose-field-encryption)
+
 A simple symmetric encryption plugin for individual fields. The goal of this plugin is to encrypt data but still allow searching over the fields. This plugin relies on the Node `crypto` module. Encryption and decryption happen transparently during save and find. 
 
 At present this plugin only works on fields with string values. Also consider [mongoose-encryption](https://github.com/joegoldbeck/mongoose-encryption) if you have other requirements.
