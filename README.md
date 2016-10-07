@@ -70,7 +70,7 @@ To enable searching over the encrypted fields the `encrypt` and `decrypt` method
 ```
 let fieldEncryption = require('mongoose-field-encryption')
 let encrypted = fieldEncryption.encrypt('some text', 'secret'));
-let decrypted = fieldEncryption.encrypt(encrypted, 'secret')); // decrypted = 'some text'
+let decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 'some text'
 ```
 
 ## Testing
