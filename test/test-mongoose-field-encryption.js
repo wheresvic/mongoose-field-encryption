@@ -6,11 +6,11 @@ const Promise = require('bluebird');
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
-const fieldEncryptionPlugin = require('../lib/mongoose-field-encryption');
+const fieldEncryptionPlugin = require('../lib/mongoose-field-encryption').fieldEncryption;
 
 const uri = process.env.URI || 'mongodb://localhost/mongoose-field-encryption-test';
 
-describe('mongoose-field-encryption', () => {
+describe('mongoose-field-encryption plugin', () => {
 
   let FieldEncryptionSchema = new mongoose.Schema({
     toEncrypt1: { type: String, required: true },

@@ -23,10 +23,12 @@ Encryption is performed using `AES-256-CTR`. To encrypt, the relevant fields are
 
 Keep your secret a secret. Ideally it should only live as an environment variable but definitely not stored anywhere in your repository.
 
+### Basic
+
 For example, given a schema as follows:
 ```javascript
 let mongoose                = require('mongoose');
-let mongooseFieldEncryption = require('mongoose-field-encryption');
+let mongooseFieldEncryption = require('mongoose-field-encryption').fieldEncryption;
 let Schema                  = mongoose.Schema;
 
 let Post = new Schema({
@@ -58,6 +60,18 @@ Also note that if you manually set the value `__enc_` prefix field to true then 
 For performance reasons, once the document has been encrypted, it remains so. The following methods are thus added to the schema:
 - `encryptFieldsSync()`: synchronous call that encrypts all fields as given by the plugin options
 - `decryptFieldsSync()`: synchronous call that decrypts encrypted fields as given by the plugin options
+
+Multiple calls to the above methods have no effect, i.e. once a field is encrypted and the `__enc_` marker field value is set to true then the ecrypt operation is ignored. Same for the decrypt operation.
+
+### Searching
+
+To enable searching over the encrypted fields the `encrypt` and `decrypt` methods have also been exposed.
+
+```
+let fieldEncryption = require('mongoose-field-encryption')
+let encrypted = fieldEncryption.encrypt('some text', 'secret'));
+let decrypted = fieldEncryption.encrypt(encrypted, 'secret')); // decrypted = 'some text'
+```
 
 ## Testing
 
