@@ -45,7 +45,9 @@ The resulting documents will have the following format:
 }
 ```
 
-`find` works transparently and you can make new documents as normal, but you should not use the `lean` option on a find if you want the fields of the document to be decrypted. `findOne`, `findById`, as well as `save` and `update` also all work as normal. From the mongoose documentation: _Note that findAndUpdate/Remove do not execute any hooks or validation before making the change in the database. If you need hooks and validation, first query for the document and then save it._
+`find` works transparently and you can make new documents as normal, but you should not use the `lean` option on a find if you want the fields of the document to be decrypted. `findOne`, `findById` and `save` also all work as normal. `update` works, but you would also need to manually set the `__enc_` field value to false if you're updating an encrypted field. 
+
+From the mongoose documentation: _Note that findAndUpdate/Remove do not execute any hooks or validation before making the change in the database. If you need hooks and validation, first query for the document and then save it._
 
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plaintext value being stored in the db.
 
