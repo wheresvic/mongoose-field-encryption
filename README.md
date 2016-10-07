@@ -21,7 +21,7 @@ Encryption is performed using `AES-256-CTR`. To encrypt, the relevant fields are
 
 ## Usage
 
-Keep your secret a secret. Ideally it should only live as an environment variable and 
+Keep your secret a secret. Ideally it should only live as an environment variable but definitely not stored anywhere in your repository.
 
 For example, given a schema as follows:
 ```javascript
