@@ -6,3 +6,6 @@ node_js:
   - "4.4"
 before_script:
   - npm install
+notifications:
+  email:
+    - victorparmar@gmail.com
