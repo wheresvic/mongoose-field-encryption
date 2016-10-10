@@ -14,6 +14,7 @@ Encryption is performed using `AES-256-CTR`. To encrypt, the relevant fields are
 
 - Node `>=4.4.7`
 - MongoDB `>=2.6.10`
+- Mongoose `>=4.0.0`
 
 ## Installation
 
@@ -54,6 +55,11 @@ The resulting documents will have the following format:
 From the mongoose documentation: _Note that findAndUpdate/Remove do not execute any hooks or validation before making the change in the database. If you need hooks and validation, first query for the document and then save it._
 
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plaintext value being stored in the db.
+
+### Required options
+
+- `fields`: an array list of the required fields
+- `secret`: a string cipher which is used to encrypt the data (don't lose this!)
 
 ### Static methods
 

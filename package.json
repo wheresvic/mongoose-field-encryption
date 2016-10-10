@@ -18,7 +18,12 @@
     "encryption",
     "field",
     "cqrs",
-    "string"
+    "string",
+    "encrypt",
+    "security",
+    "search",
+    "searchable",
+    "mongo"
   ],
   "author": {
     "name": "Victor Parmar",
