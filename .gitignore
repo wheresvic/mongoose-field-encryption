@@ -1,3 +1,5 @@
+.coveralls.yml
+
 # Logs
 logs
 *.log
