@@ -68,7 +68,7 @@ For performance reasons, once the document has been encrypted, it remains so. Th
 - `decryptFieldsSync()`: synchronous call that decrypts encrypted fields as given by the plugin options
 - `stripEncryptionFieldMarkers()`: synchronous call that removes the encryption field markers (useful for returning documents without letting the user know that something was encrypted)
 
-Multiple calls to the above methods have no effect, i.e. once a field is encrypted and the `__enc_` marker field value is set to true then the ecrypt operation is ignored. Same for the decrypt operation.
+Multiple calls to the above methods have no effect, i.e. once a field is encrypted and the `__enc_` marker field value is set to true then the ecrypt operation is ignored. Same for the decrypt operation. Of course if the field markers have been removed via the `stripEncryptionFieldMarkers()` call, then the encryption will be executed if invoked.
 
 ### Searching
 
