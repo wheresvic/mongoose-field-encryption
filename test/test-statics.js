@@ -107,5 +107,26 @@ describe('mongoose-field-encryption plugin static methods', () => {
 
   });
 
+  it('should strip encryption field markers', () => {
+
+    // given
+    let sut = new FieldEncryptionStaticsTest({
+      toEncrypt1: 'blah',
+      __enc_toEncrypt1: false,
+      toEncrypt2: 'yo',
+      __enc_toEncrypt2: false
+    });
+
+    // when
+    sut.stripEncryptionFieldMarkers();
+
+    // then
+    expect(sut.__enc_toEncrypt1).to.be.undefined;
+    expect(sut.toEncrypt1).to.equal('blah');
+    expect(sut.__enc_toEncrypt2).to.be.undefined;
+    expect(sut.toEncrypt2).to.equal('yo');
+
+  });
+
 
 });

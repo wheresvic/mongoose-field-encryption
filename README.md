@@ -66,6 +66,7 @@ Also note that if you manually set the value `__enc_` prefix field to true then 
 For performance reasons, once the document has been encrypted, it remains so. The following methods are thus added to the schema:
 - `encryptFieldsSync()`: synchronous call that encrypts all fields as given by the plugin options
 - `decryptFieldsSync()`: synchronous call that decrypts encrypted fields as given by the plugin options
+- `stripEncryptionFieldMarkers()`: synchronous call that removes the encryption field markers (useful for returning documents without letting the user know that something was encrypted)
 
 Multiple calls to the above methods have no effect, i.e. once a field is encrypted and the `__enc_` marker field value is set to true then the ecrypt operation is ignored. Same for the decrypt operation.
 
