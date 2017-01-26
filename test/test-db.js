@@ -37,7 +37,7 @@ describe('mongoose-field-encryption plugin db', () => {
     mongoose.connection.close()
   });
 
-  it('should not encrypt non-string fields on save', () => {
+  it('should encrypt Object fields on save', () => {
 
     // given
     let NestedFieldEncryptionSchema = new mongoose.Schema({
@@ -59,11 +59,9 @@ describe('mongoose-field-encryption plugin db', () => {
     // when
     return sut.save()
       .then(() => {
-        expect.fail('should not have saved with a non-string field');
-      })
-      .catch(err => {
-        // then
-        expect(err.message).to.equal('Cannot encrypt non string field');
+        expect(sut.__enc_toEncrypt).to.be.true;
+
+        return FieldEncryption.findOne({ _id: sut._id });
       });
   });
 
