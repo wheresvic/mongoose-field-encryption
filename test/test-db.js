@@ -60,8 +60,16 @@ describe('mongoose-field-encryption plugin db', () => {
     return sut.save()
       .then(() => {
         expect(sut.__enc_toEncrypt).to.be.true;
+        expect(sut.toObject().toEncrypt).to.be.undefined;
+        expect(sut.__enc_toEncrypt_d).to.equal('3e82e106b0f6a137e710374b8b3be61816e5e48dcaaeb16b57016f58ccb28a0967e4');
 
-        return FieldEncryption.findOne({ _id: sut._id });
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        expect(found).to.be.not.null;
+        expect(found.__enc_toEncrypt).to.be.false;
+        expect(found.toEncrypt).to.be.an('object');
+        expect(found.toEncrypt.nested).to.equal('some stuff to encrypt');
       });
   });
 
