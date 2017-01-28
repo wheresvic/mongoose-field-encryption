@@ -48,7 +48,7 @@ describe('mongoose-field-encryption plugin db', () => {
         nested: 'some stuff to encrypt'
       },
       toEncryptArray: [1, 2, 3],
-      toEncryptDate: new Date(1970, 1, 1)
+      toEncryptDate: new Date(1485641048338)
     });
 
     return sut;
@@ -68,7 +68,7 @@ describe('mongoose-field-encryption plugin db', () => {
 
     expect(sut.toObject().toEncryptDate).to.be.undefined;
     expect(sut.__enc_toEncryptDate).to.be.true;
-    expect(sut.__enc_toEncryptDate_d).to.equal('6791b654f3aff462e819246cd665b90855aba1db82bef5342d46');
+    expect(sut.__enc_toEncryptDate_d).to.equal('6792bf52f4aff462e8182d6cd664b90851aba1d382bdf63c2d46');
 
   }
 
@@ -84,7 +84,7 @@ describe('mongoose-field-encryption plugin db', () => {
     expect(found.__enc_toEncryptArray).to.be.false;
     expect(found.__enc_toEncryptArray_d).to.equal('');
 
-    expect(JSON.stringify(found.toEncryptDate)).to.equal('"1970-01-31T23:00:00.000Z"');
+    expect(JSON.stringify(found.toEncryptDate)).to.equal('"2017-01-28T22:04:08.338Z"');
     expect(found.__enc_toEncryptDate).to.be.false;
     expect(found.__enc_toEncryptDate_d).to.equal('');
   }
