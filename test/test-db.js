@@ -37,12 +37,14 @@ describe('mongoose-field-encryption plugin db', () => {
     mongoose.connection.close()
   });
 
-  it('should not encrypt non-string fields on save', () => {
+  it('should encrypt Object fields on save', () => {
 
     // given
     let NestedFieldEncryptionSchema = new mongoose.Schema({
       toEncrypt: {
-        nested: { type: String, required: true }
+        nested: { type: String, required: true },
+        arr: [],
+        date: { type: Date }
       }
     });
 
@@ -52,18 +54,29 @@ describe('mongoose-field-encryption plugin db', () => {
 
     let sut = new NestedFieldEncryption({
       toEncrypt: {
-        nested: 'some stuff to encrypt'
+        nested: 'some stuff to encrypt',
+        arr: [ 1, 2, 3 ],
+        date: new Date(1970, 1, 1)
       }
     });
 
     // when
     return sut.save()
       .then(() => {
-        expect.fail('should not have saved with a non-string field');
+        expect(sut.__enc_toEncrypt).to.be.true;
+        expect(sut.toObject().toEncrypt).to.be.undefined;
+        //TODO add correct value
+        //expect(sut.__enc_toEncrypt_d).to.equal('3e82ee11b1a0fe08f4062714d70baf1a01f0e58e8eb4e736475536168efad74f73cd436a5c1aec599940d430c43fb9408ba490ba0a2108f1dc7105ab4ce0a7d371cb0af8b4147fc584c182bded6dfe4eda50');
+
+        return NestedFieldEncryption.findById(sut._id);
       })
-      .catch(err => {
-        // then
-        expect(err.message).to.equal('Cannot encrypt non string field');
+      .then(found => {
+        //console.dir(found.toObject());
+
+        expect(found).to.be.not.null;
+        expect(found.__enc_toEncrypt).to.be.false;
+        expect(found.toEncrypt).to.be.an('object');
+        expect(found.toEncrypt.nested).to.equal('some stuff to encrypt');
       });
   });
 
