@@ -41,7 +41,7 @@
     "mongoose": "^4.6.0"
   },
   "devDependencies": {
-    "bluebird": "^3.4.6",
+    "bluebird": "3.5.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.14",
     "istanbul": "^0.4.5",
