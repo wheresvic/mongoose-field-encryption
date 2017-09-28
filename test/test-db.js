@@ -31,7 +31,7 @@ describe('mongoose-field-encryption plugin db', () => {
   let NestedFieldEncryption = mongoose.model('NestedFieldEncryption', NestedFieldEncryptionSchema);
 
   before(() => {
-    return mongoose.connect(uri);
+    return mongoose.connect(uri, { useMongoClient: true });
   });
 
   after(() => {
