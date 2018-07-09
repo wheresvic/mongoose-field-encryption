@@ -38,7 +38,7 @@
     "url": "https://github.com/victorparmar/mongoose-field-encryption/issues"
   },
   "dependencies": {
-    "mongoose": "4.11.13"
+    "mongoose": "4.11.14"
   },
   "devDependencies": {
     "bluebird": "3.5.0",
