@@ -104,3 +104,11 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 - `npm version patch,minor,major`
 - `npm publish`
+
+## Changelog
+
+### 1.1.0
+
+- Added support for mongoose 5 [https://github.com/victorparmar/mongoose-field-encryption/pull/16](https://github.com/victorparmar/mongoose-field-encryption/pull/16).
+- Removed mongoose dependency, moved to `peerDependencies`.
+- Formatted source code using prettier.
