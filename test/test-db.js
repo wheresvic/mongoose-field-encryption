@@ -5,12 +5,14 @@ const expect = require('chai').expect;
 const Promise = require('bluebird');
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
+mongoose.set('bufferCommands', false);
 
 const fieldEncryptionPlugin = require('../lib/mongoose-field-encryption').fieldEncryption;
 
-const uri = process.env.URI || 'mongodb://localhost/mongoose-field-encryption-test';
+const uri = process.env.URI || 'mongodb://127.0.0.1:27017/mongoose-field-encryption-test';
 
-describe('mongoose-field-encryption plugin db', () => {
+describe('mongoose-field-encryption plugin db', function() {
+  this.timeout(5000);
 
   let NestedFieldEncryptionSchema = new mongoose.Schema({
     toEncryptString: { type: String, required: true },
@@ -31,7 +33,7 @@ describe('mongoose-field-encryption plugin db', () => {
   let NestedFieldEncryption = mongoose.model('NestedFieldEncryption', NestedFieldEncryptionSchema);
 
   before(() => {
-    return mongoose.connect(uri, { useMongoClient: true });
+    return mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
   });
 
   after(() => {
