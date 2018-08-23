@@ -98,7 +98,7 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 1. Install dependencies with `npm install` and [install mongo](http://docs.mongodb.org/manual/installation/) if you don't have it yet.
 2. Start mongo with `mongod`.
-3. Run tests with `npm test`. Additionally you can pass your own mongodb uri as an environment variable if you would like to test against your own database, for e.g. `URI='mongodb://username:password@localhost:27017/mongoose-field-encryption-test' npm test`
+3. Run tests with `npm test`. Additionally you can pass your own mongodb uri as an environment variable if you would like to test against your own database, for e.g. `URI='mongodb://username:password@127.0.0.1:27017/mongoose-field-encryption-test' npm test`
 
 ## Publishing
 

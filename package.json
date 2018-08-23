@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "test": "mocha",
-    "coverage": "URI='mongodb://mfe:mfe@localhost/mongoose-field-encryption-test' istanbul cover ./node_modules/mocha/bin/_mocha",
-    "coverage-report": "URI='mongodb://mfe:mfe@localhost/mongoose-field-encryption-test' istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "coverage": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' istanbul cover ./node_modules/mocha/bin/_mocha",
+    "coverage-report": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,6 @@
     "istanbul": "^0.4.5",
     "mocha": "5.2.0",
     "mocha-lcov-reporter": "1.3.0",
-    "mongoose": "4.13.12"
+    "mongoose": "5.2.9"
   }
 }
