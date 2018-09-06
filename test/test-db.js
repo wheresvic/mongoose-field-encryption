@@ -174,6 +174,31 @@ describe("mongoose-field-encryption plugin db", function() {
       });
   });
 
+  it("should encrypt string fields on update without $set", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.update(
+          { _id: sut._id },
+          { toEncryptString: "snoop" }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        // then
+        expect(found.__enc_toEncryptString).to.be.false;
+        expect(found.toEncryptString).to.equal("snoop");
+      });
+  });
+
   it("should encrypt string fields on fineOneAndUpdate", () => {
     // given
     let sut = getSut();
