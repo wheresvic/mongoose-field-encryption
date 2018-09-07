@@ -174,7 +174,57 @@ describe("mongoose-field-encryption plugin db", function() {
       });
   });
 
-  it("should not encrypt non string fields on update", () => {
+  it("should encrypt string fields on update without $set", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.update(
+          { _id: sut._id },
+          { toEncryptString: "snoop" }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        // then
+        expect(found.__enc_toEncryptString).to.be.false;
+        expect(found.toEncryptString).to.equal("snoop");
+      });
+  });
+
+  it("should encrypt string fields on fineOneAndUpdate", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.findOneAndUpdate(
+          { _id: sut._id },
+          { $set: { toEncryptString: "snoop", __enc_toEncryptString: false } }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        // then
+        expect(found.__enc_toEncryptString).to.be.false;
+        expect(found.toEncryptString).to.equal("snoop");
+      });
+  })
+
+  it("should encrypt non string fields on update", () => {
     // given
     let sut = getSut();
 
@@ -197,12 +247,67 @@ describe("mongoose-field-encryption plugin db", function() {
         );
       })
       .then(() => {
-        expect.fail("should not have updated");
+        return NestedFieldEncryption.findById(sut._id);
       })
-      .catch(err => {
-        // then
-        // TODO: this is a mongoose cast error
-        expect(err).to.not.be.null;
+      .then(found => {
+        expect(found.toEncryptObject.nested).to.eql("snoop");
       });
   });
+
+  it("should encrypt non string fields on fineOneAndUpdate without $set", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.findOneAndUpdate(
+          {
+            _id: sut._id
+          },
+          {
+            toEncryptObject: { nested: "snoop" }
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        expect(found.toEncryptObject.nested).to.eql("snoop");
+      });
+  });
+
+  it ("should not encrypt already encrypted fields", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.update(
+          {
+            _id: sut._id
+          },
+          {
+            $set: {
+              toEncryptString: "already encrypted string",
+              __enc_toEncryptObject: true
+            }
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        expect(found.toEncryptString).to.eql("already encrypted string");
+      });
+  })
 });
