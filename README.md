@@ -67,6 +67,17 @@ The resulting documents will have the following format:
 
 From the mongoose package documentation: _Note that findAndUpdate/Remove do not execute any hooks or validation before making the change in the database. If you need hooks and validation, first query for the document and then save it._
 
+Note that as of `1.2.0` release, support for `findOneAndUpdate` has also been added. Note that you would need to specifically set the encryption field marker for it to be encrypted. For example:
+
+```js
+Post.findOneAndUpdate(
+  { _id: postId },
+  { $set: { message: "snoop", __enc_message: false } }
+);
+```
+
+The above also works for non-string fields. See changelog for more details.
+
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plain value being stored in the db.
 
 ### Required options
@@ -107,8 +118,12 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
+### 1.2.0
+
+- Added support for `findOneAndUpdate` [https://github.com/wheresvic/mongoose-field-encryption/pull/20](https://github.com/wheresvic/mongoose-field-encryption/pull/20)
+
 ### 1.1.0
 
-- Added support for mongoose 5 [https://github.com/victorparmar/mongoose-field-encryption/pull/16](https://github.com/victorparmar/mongoose-field-encryption/pull/16).
+- Added support for mongoose 5 [https://github.com/wheresvic/mongoose-field-encryption/pull/16](https://github.com/wheresvic/mongoose-field-encryption/pull/16).
 - Removed mongoose dependency, moved to `peerDependencies`.
 - Formatted source code using prettier.
