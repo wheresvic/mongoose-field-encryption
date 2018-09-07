@@ -108,7 +108,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
     expect(sut.toEncryptObject.nested).to.equal("test3");
   });
 
-  it.only("should ignore multiple decrypt field calls", () => {
+  it("should ignore multiple decrypt field calls", () => {
     // given
     let sut = new FieldEncryptionStaticsTest({
       noEncrypt: "clear",
