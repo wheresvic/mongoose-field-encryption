@@ -16,7 +16,7 @@
     "src": {
       "status": true,
       "tag": true,
-      "release": true,
+      "release": false,
       "publish": true
     }
   }
