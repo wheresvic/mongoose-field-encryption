@@ -247,12 +247,10 @@ describe("mongoose-field-encryption plugin db", function() {
         );
       })
       .then(() => {
-        expect.fail("should not have updated");
+        return NestedFieldEncryption.findById(sut._id);
       })
-      .catch(err => {
-        // then
-        // TODO: this is a mongoose cast error
-        expect(err).to.not.be.null;
+      .then(found => {
+        expect(found.toEncryptObject.nested).to.eql("snoop");
       });
   });
 });
