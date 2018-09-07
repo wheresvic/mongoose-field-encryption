@@ -25,7 +25,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   NestedFieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
     fields: ["toEncryptString", "toEncryptObject", "toEncryptArray", "toEncryptDate"],
-    secret: "icanhazcheezburger" // should ideally be process.env.SECRET
+    secret: require("crypto").scryptSync("password", "salt", 32) // should ideally be process.env.SECRET
   });
 
   let NestedFieldEncryption = mongoose.model("NestedFieldEncryption", NestedFieldEncryptionSchema);
@@ -55,22 +55,16 @@ describe("mongoose-field-encryption plugin db", function() {
   }
 
   function expectEncryptionValues(sut) {
-    expect(sut.toEncryptString).to.equal("2dc9eb06e3efa172");
     expect(sut.__enc_toEncryptString).to.be.true;
 
     expect(sut.toObject().toEncryptObject).to.be.undefined;
     expect(sut.__enc_toEncryptObject).to.be.true;
-    expect(sut.__enc_toEncryptObject_d).to.equal(
-      "3e82e106b0f6a137e710374b8b3be61816e5e48dcaaeb16b57016f58ccb28a0967e4"
-    );
 
     expect(sut.toObject().toEncryptArray).to.be.undefined;
     expect(sut.__enc_toEncryptArray).to.be.true;
-    expect(sut.__enc_toEncryptArray_d).to.equal("1e91a351efb199");
 
     expect(sut.toObject().toEncryptDate).to.be.undefined;
     expect(sut.__enc_toEncryptDate).to.be.true;
-    expect(sut.__enc_toEncryptDate_d).to.equal("6792bf52f4aff462e8182d6cd664b90851aba1d382bdf63c2d46");
   }
 
   function expectDecryptionValues(found) {
