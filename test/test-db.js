@@ -253,4 +253,61 @@ describe("mongoose-field-encryption plugin db", function() {
         expect(found.toEncryptObject.nested).to.eql("snoop");
       });
   });
+
+  it("should encrypt non string fields on fineOneAndUpdate without $set", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.findOneAndUpdate(
+          {
+            _id: sut._id
+          },
+          {
+            toEncryptObject: { nested: "snoop" }
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        expect(found.toEncryptObject.nested).to.eql("snoop");
+      });
+  });
+
+  it ("should not encrypt already encrypted fields", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.update(
+          {
+            _id: sut._id
+          },
+          {
+            $set: {
+              toEncryptString: "already encrypted string",
+              __enc_toEncryptObject: true
+            }
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.findById(sut._id);
+      })
+      .then(found => {
+        expect(found.toEncryptString).to.eql("already encrypted string");
+      });
+  })
 });
