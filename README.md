@@ -1,6 +1,6 @@
 # mongoose-field-encryption
 
-[![Build Status](https://travis-ci.org/victorparmar/mongoose-field-encryption.svg?branch=master)](https://travis-ci.org/victorparmar/mongoose-field-encryption) [![Coverage Status](https://coveralls.io/repos/github/victorparmar/mongoose-field-encryption/badge.svg?branch=master)](https://coveralls.io/github/victorparmar/mongoose-field-encryption?branch=master)
+[![Build Status](https://travis-ci.org/wheresvic/mongoose-field-encryption.svg?branch=master)](https://travis-ci.org/wheresvic/mongoose-field-encryption) [![Coverage Status](https://coveralls.io/repos/github/wheresvic/mongoose-field-encryption/badge.svg?branch=master)](https://coveralls.io/github/wheresvic/mongoose-field-encryption?branch=master)
 
 A simple symmetric encryption plugin for individual fields. The goal of this plugin is to encrypt data but still allow searching over fields with string values. This plugin relies on the Node `crypto` module. Encryption and decryption happen transparently during save and find.
 
