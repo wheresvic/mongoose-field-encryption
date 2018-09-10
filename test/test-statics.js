@@ -22,7 +22,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
 
   FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
     fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
-    secret: require("crypto").scryptSync("password", "salt", 32) // should ideally be process.env.SECRET
+    secret: "icanhazcheezburger" // should ideally be process.env.SECRET
   });
 
   let FieldEncryptionStaticsTest = mongoose.model("FieldEncryptionStaticsTest", FieldEncryptionSchema);

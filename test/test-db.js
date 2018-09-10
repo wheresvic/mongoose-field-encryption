@@ -25,7 +25,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   NestedFieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
     fields: ["toEncryptString", "toEncryptObject", "toEncryptArray", "toEncryptDate"],
-    secret: require("crypto").scryptSync("password", "salt", 32) // should ideally be process.env.SECRET
+    secret: "icanhazcheezburger" // should ideally be process.env.SECRET
   });
 
   let NestedFieldEncryption = mongoose.model("NestedFieldEncryption", NestedFieldEncryptionSchema);

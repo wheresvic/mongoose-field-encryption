@@ -30,7 +30,7 @@ describe("mongoose-field-encryption plugin setup", () => {
   it("should initialize plugin without any fields", done => {
     // when
     FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
-      secret: require("crypto").scryptSync("password", "salt", 32)
+      secret: "icanhazcheezburger"
     });
 
     // then
