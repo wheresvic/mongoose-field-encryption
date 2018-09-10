@@ -53,6 +53,13 @@ describe("mongoose-field-encryption plugin static methods", () => {
 
     expect(sut.__enc_toEncryptObject).to.be.true;
     expect(sut.toObject().toEncryptObject).to.be.undefined;
+
+    sut.decryptFieldsSync();
+    expect(sut.__enc_toEncrypt1).to.be.false;
+    expect(sut.noEncrypt).to.eql("clear");
+    expect(sut.toEncrypt1).to.eql("some stuff");
+    expect(sut.toEncrypt2).to.eql("should be hidden");
+    expect(sut.toEncryptObject.nested).to.eql("nested");
   });
 
   it("should not encrypt already encrypted fields", () => {
