@@ -10,7 +10,7 @@ Also consider [mongoose-encryption](https://github.com/joegoldbeck/mongoose-encr
 
 ## How it works
 
-Encryption is performed using `AES-256-CTR`. To encrypt, the relevant fields are encrypted with the provided secret and the resulting hex string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
+Encryption is performed using `AES-256-CBC`. To encrypt, the relevant fields are encrypted with the provided secret + random salt. The generated salt and the resulting encrypted value is concatenated together using a `:` character and the final string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
 
 Fields which are either objects or of a different type are converted to strings using `JSON.stringify` and the value stored in an extra marker field of type `string` with a naming scheme of `__enc_` as prefix and `_d` as suffix on the original field name. The original field is then set to `undefined`. Please note that this might break any custom validation and application of this plugin on non-string fields needs to be done with care.
 
@@ -55,11 +55,11 @@ The resulting documents will have the following format:
 {
   _id: ObjectId,
   title: String,
-  message: String, // encrypted hex value as string
+  message: String, // encrypted salt and hex value as string, e.g. 9d6a0ca4ac2c80fc84df0a06de36b548:cee57185fed78c055ed31ca6a8be9bf20d303283200a280d0f4fc8a92902e0c1
   __enc_message: true, // boolean marking if the field is encrypted or not
   references: undefined, // encrypted object set to undefined
   __enc_references: true, // boolean marking if the field is encrypted or not
-  __enc_references_d: String // encrypted hex object value as string
+  __enc_references_d: String // encrypted salt and hex object value as string, e.g. 6df2171f25fd1d32adc4a4059f867a82:5909152856cf9cdb7dc32c6af321c8fe69390c359c6b19d967eaa6e7a0a97216
 }
 ```
 
@@ -80,10 +80,11 @@ The above also works for non-string fields. See changelog for more details.
 
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plain value being stored in the db.
 
-### Required options
+### Options
 
-- `fields`: an array list of the required fields
-- `secret`: a string cipher which is used to encrypt the data (don't lose this!)
+- `fields` (required): an array list of the required fields
+- `secret` (required): a string cipher which is used to encrypt the data (don't lose this!)
+- `useAes256Ctr` (optional, default `false`): a boolean indicating whether the older `aes-256-ctr` algorithm should be used. Note that this is strictly a backwards compatibility feature and for new installations it is recommended to leave this at default.
 
 ### Static methods
 
@@ -117,6 +118,14 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 - `npm publish`
 
 ## Changelog
+
+### 2.0.0
+
+- Use `cipheriv` instead of plain `cipher`, [#17](https://github.com/wheresvic/mongoose-field-encryption/issues/17).
+  
+  Note that this might break any _fixed_ search capability as the encrypted values are now based on a random salt.
+  
+  Also note that while this version maintains backward compatibility, i.e. decryption will automatically fall back to using the `aes-256-ctr` algorithm, any further updates will lead to the value being encrypted with the salt. In order to fully maintain backwards compatibilty, an new option `useAes256Ctr` has been introduced (default `false`), which can be set to `true` to continue using the plugin as before. It is highly recommended to start using the newer algorithm however, see issue for more details.
 
 ### 1.2.0
 
