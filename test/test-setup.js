@@ -29,7 +29,9 @@ describe("mongoose-field-encryption plugin setup", () => {
 
   it("should initialize plugin without any fields", done => {
     // when
-    FieldEncryptionSchema.plugin(fieldEncryptionPlugin, { secret: "blah" });
+    FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
+      secret: "icanhazcheezburger"
+    });
 
     // then
     done();
