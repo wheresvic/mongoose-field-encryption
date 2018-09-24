@@ -275,7 +275,7 @@ describe("mongoose-field-encryption plugin db", function() {
       });
   });
 
-  it("should decrypt data on find", () => {
+  it("should decrypt data on find() method call", () => {
     // given
     let sut = getSut();
 

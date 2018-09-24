@@ -6,11 +6,11 @@ A simple symmetric encryption plugin for individual fields. The goal of this plu
 
 As of the stable 1.0.0 release, this plugin works on individual fields of any type. However, note that for non-string fields, the original value is set to undefined after encryption. This is because if the schema has defined a field as an array, it would not be possible to replace it with a string value.
 
-Also consider [mongoose-encryption](https://github.com/joegoldbeck/mongoose-encryption) if you have other requirements.
+Also consider [mongoose-encryption](https://github.com/joegoldbeck/mongoose-encryption) if you are looking to encrypt the entire document.
 
 ## How it works
 
-Encryption is performed using `AES-256-CTR`. To encrypt, the relevant fields are encrypted with the provided secret and the resulting hex string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
+Encryption is performed using `AES-256-CBC`. To encrypt, the relevant fields are encrypted with the provided secret + random salt. The generated salt and the resulting encrypted value is concatenated together using a `:` character and the final string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
 
 Fields which are either objects or of a different type are converted to strings using `JSON.stringify` and the value stored in an extra marker field of type `string` with a naming scheme of `__enc_` as prefix and `_d` as suffix on the original field name. The original field is then set to `undefined`. Please note that this might break any custom validation and application of this plugin on non-string fields needs to be done with care.
 
@@ -24,18 +24,23 @@ Fields which are either objects or of a different type are converted to strings 
 
 `npm install mongoose-field-encryption`
 
-## Usage
+## Security Notes
 
-Keep your secret a secret. Ideally it should only live as an environment variable but definitely not stored anywhere in your repository.
+- _Always store your keys and secrets outside of version control and separate from your database._ An environment variable on your application server works well for this.
+- Additionally, store your encryption key offline somewhere safe. If you lose it, there is no way to retrieve your encrypted data.
+- Encrypting passwords is no substitute for appropriately hashing them. `bcrypt` is one great option. You can also encrypt the password afer hashing it although it is not necessary.
+- If an attacker gains access to your application server, they likely have access to both the database and the key. At that point, neither encryption nor authentication do you any good.
+
+## Usage
 
 ### Basic
 
 For example, given a schema as follows:
 
 ```js
-const mongoose                = require('mongoose');
-const mongooseFieldEncryption = require('mongoose-field-encryption').fieldEncryption;
-const Schema                  = mongoose.Schema;
+const mongoose = require("mongoose");
+const mongooseFieldEncryption = require("mongoose-field-encryption").fieldEncryption;
+const Schema = mongoose.Schema;
 
 const Post = new Schema({
   title: String,
@@ -46,7 +51,7 @@ const Post = new Schema({
   }
 });
 
-Post.plugin(mongooseFieldEncyption, {fields: ['message', 'references'], secret: 'some secret key'});
+Post.plugin(mongooseFieldEncyption, { fields: ["message", "references"], secret: "some secret key" });
 ```
 
 The resulting documents will have the following format:
@@ -55,11 +60,11 @@ The resulting documents will have the following format:
 {
   _id: ObjectId,
   title: String,
-  message: String, // encrypted hex value as string
+  message: String, // encrypted salt and hex value as string, e.g. 9d6a0ca4ac2c80fc84df0a06de36b548:cee57185fed78c055ed31ca6a8be9bf20d303283200a280d0f4fc8a92902e0c1
   __enc_message: true, // boolean marking if the field is encrypted or not
   references: undefined, // encrypted object set to undefined
   __enc_references: true, // boolean marking if the field is encrypted or not
-  __enc_references_d: String // encrypted hex object value as string
+  __enc_references_d: String // encrypted salt and hex object value as string, e.g. 6df2171f25fd1d32adc4a4059f867a82:5909152856cf9cdb7dc32c6af321c8fe69390c359c6b19d967eaa6e7a0a97216
 }
 ```
 
@@ -70,20 +75,18 @@ From the mongoose package documentation: _Note that findAndUpdate/Remove do not 
 Note that as of `1.2.0` release, support for `findOneAndUpdate` has also been added. Note that you would need to specifically set the encryption field marker for it to be encrypted. For example:
 
 ```js
-Post.findOneAndUpdate(
-  { _id: postId },
-  { $set: { message: "snoop", __enc_message: false } }
-);
+Post.findOneAndUpdate({ _id: postId }, { $set: { message: "snoop", __enc_message: false } });
 ```
 
 The above also works for non-string fields. See changelog for more details.
 
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plain value being stored in the db.
 
-### Required options
+### Options
 
-- `fields`: an array list of the required fields
-- `secret`: a string cipher which is used to encrypt the data (don't lose this!)
+- `fields` (required): an array list of the required fields
+- `secret` (required): a string cipher which is used to encrypt the data (don't lose this!)
+- `useAes256Ctr` (optional, default `false`): a boolean indicating whether the older `aes-256-ctr` algorithm should be used. Note that this is strictly a backwards compatibility feature and for new installations it is recommended to leave this at default.
 
 ### Static methods
 
@@ -117,6 +120,14 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 - `npm publish`
 
 ## Changelog
+
+### 2.0.0
+
+- Use `cipheriv` instead of plain `cipher`, [#17](https://github.com/wheresvic/mongoose-field-encryption/issues/17).
+
+  Note that this might break any _fixed_ search capability as the encrypted values are now based on a random salt.
+
+  Also note that while this version maintains backward compatibility, i.e. decryption will automatically fall back to using the `aes-256-ctr` algorithm, any further updates will lead to the value being encrypted with the salt. In order to fully maintain backwards compatibilty, an new option `useAes256Ctr` has been introduced (default `false`), which can be set to `true` to continue using the plugin as before. It is highly recommended to start using the newer algorithm however, see issue for more details.
 
 ### 1.2.0
 
