@@ -275,6 +275,34 @@ describe("mongoose-field-encryption plugin db", function() {
       });
   });
 
+  it("should decrypt data on find", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.findOneAndUpdate(
+          {
+            _id: sut._id
+          },
+          {
+            toEncryptObject: { nested: "snoop" }
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.find({ _id: sut._id });
+      })
+      .then(foundArray => {
+        const found = foundArray[0];
+        expect(found.toEncryptObject.nested).to.eql("snoop");
+      });
+  });
+
   it ("should not encrypt already encrypted fields", () => {
     // given
     let sut = getSut();
