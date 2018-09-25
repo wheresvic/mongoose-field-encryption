@@ -121,6 +121,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
+### 2.1.0
+
+- Fix bug where data was not getting decrypted on a `find()`, [#23](https://github.com/wheresvic/mongoose-field-encryption/issues/23).
+
 ### 2.0.0
 
 - Use `cipheriv` instead of plain `cipher`, [#17](https://github.com/wheresvic/mongoose-field-encryption/issues/17).
