@@ -116,12 +116,18 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Publishing
 
+### release-it
+
+`release-it patch,minor,major`
+
+### Manual
+
 - `npm version patch,minor,major`
 - `npm publish`
 
 ## Changelog
 
-### 2.1.0
+### 2.1.1
 
 - Fix bug where data was not getting decrypted on a `find()`, [#23](https://github.com/wheresvic/mongoose-field-encryption/issues/23).
 
