@@ -16,6 +16,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   let NestedFieldEncryptionSchema = new mongoose.Schema({
     toEncryptString: { type: String, required: true },
+    toEncryptStringNotRetrieved: { type: String, select: false },
     toEncryptObject: {
       nested: String
     },
@@ -24,7 +25,7 @@ describe("mongoose-field-encryption plugin db", function() {
   });
 
   NestedFieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
-    fields: ["toEncryptString", "toEncryptObject", "toEncryptArray", "toEncryptDate"],
+    fields: ["toEncryptString", "toEncryptObject", "toEncryptArray", "toEncryptDate", "toEncryptStringNotRetrieved"],
     secret: "icanhazcheezburger" // should ideally be process.env.SECRET
   });
 
@@ -290,6 +291,7 @@ describe("mongoose-field-encryption plugin db", function() {
             _id: sut._id
           },
           {
+            toEncryptString: "yaddayadda",
             toEncryptObject: { nested: "snoop" }
           }
         );
@@ -299,6 +301,7 @@ describe("mongoose-field-encryption plugin db", function() {
       })
       .then(foundArray => {
         const found = foundArray[0];
+        expect(found.toEncryptString).to.eql("yaddayadda");
         expect(found.toEncryptObject.nested).to.eql("snoop");
       });
   });
@@ -361,4 +364,35 @@ describe("mongoose-field-encryption plugin db", function() {
         expect(found.toEncryptString).to.eql("already encrypted string");
       });
   })
+
+  it("should decrypt data on find() method call even if some fields are marked as not selectables", () => {
+    // given
+    let sut = getSut();
+
+    // when
+    return sut
+      .save()
+      .then(() => {
+        expectEncryptionValues(sut);
+
+        return NestedFieldEncryption.findOneAndUpdate(
+          {
+            _id: sut._id
+          },
+          {
+            toEncryptString: "yaddayadda",
+            toEncryptObject: { nested: "snoop" },
+            toEncryptStringNotRetrieved: "dubidubida"
+          }
+        );
+      })
+      .then(() => {
+        return NestedFieldEncryption.find({ _id: sut._id });
+      })
+      .then(foundArray => {
+        const found = foundArray[0];
+        expect(found.toEncryptString).to.equal("yaddayadda");
+        expect(found.toEncryptStringNotRetrieved).to.be.undefined;
+      });
+  });
 });
