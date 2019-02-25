@@ -8,12 +8,12 @@ mongoose.Promise = Promise;
 
 const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldEncryption;
 
-describe("mongoose-field-encryption plugin setup", () => {
+describe("mongoose-field-encryption plugin setup", function() {
   let FieldEncryptionSchema = new mongoose.Schema({
     a: { type: String, required: true }
   });
 
-  it("should not initialize plugin without a secret", done => {
+  it("should not initialize plugin without a secret", function(done) {
     try {
       // when
       FieldEncryptionSchema.plugin(fieldEncryptionPlugin);
@@ -27,7 +27,7 @@ describe("mongoose-field-encryption plugin setup", () => {
     done();
   });
 
-  it("should initialize plugin without any fields", done => {
+  it("should initialize plugin without any fields", function(done) {
     // when
     FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
       secret: "icanhazcheezburger"
