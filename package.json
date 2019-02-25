@@ -50,7 +50,22 @@
     "mocha-lcov-reporter": "1.3.0",
     "mongoose": "5.3.6",
     "nyc": "13.3.0",
-    "release-it": "7.6.2",
+    "release-it": "10.1.0",
     "sinon": "7.2.4"
+  },
+  "release-it": {
+    "pkgFiles": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "scripts": {
+      "beforeStart": "npm run test:auth"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    }
   }
 }
