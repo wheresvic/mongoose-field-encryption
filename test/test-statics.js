@@ -10,7 +10,7 @@ mongoose.Promise = Promise;
 
 const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldEncryption;
 
-describe("mongoose-field-encryption plugin static methods", () => {
+describe("mongoose-field-encryption plugin static methods", function() {
   describe("aes-256-cbc", function() {
     let FieldEncryptionSchema = new mongoose.Schema({
       noEncrypt: { type: String, required: true },
@@ -28,7 +28,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
 
     let FieldEncryptionStaticsTest = mongoose.model("FieldEncryptionStaticsTest", FieldEncryptionSchema);
 
-    it("should encrypt fields", () => {
+    it("should encrypt fields", function() {
       // given
       let sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -63,7 +63,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should not encrypt already encrypted fields", () => {
+    it("should not encrypt already encrypted fields", function() {
       // given
       let sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -87,7 +87,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
       createCipherivSpy.restore();
     });
 
-    it("should decrypt fields", () => {
+    it("should decrypt fields", function() {
       // given
       let sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -116,7 +116,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
       expect(sut.toEncryptObject.nested).to.equal("test3");
     });
 
-    it("should ignore multiple decrypt field calls", () => {
+    it("should ignore multiple decrypt field calls", function() {
       // given
       let sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -140,7 +140,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
       expect(decryptionCountAfterTwoDecryptFieldCalls);
     });
 
-    it("should strip encryption field markers", () => {
+    it("should strip encryption field markers", function() {
       // given
       let sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -192,7 +192,7 @@ describe("mongoose-field-encryption plugin static methods", () => {
       FieldEncryptionSchemaDeprecated
     );
 
-    it("should encrypt and decrypt fields", () => {
+    it("should encrypt and decrypt fields", function() {
       // given
       let sut = new FieldEncryptionStaticsTestDeprecated({
         noEncrypt: "clear",
