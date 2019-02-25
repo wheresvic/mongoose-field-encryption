@@ -127,6 +127,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
+### 2.2.0
+
+- Update dependencies
+
 ### 2.1.3
 
 - Fix bug where decryption fails when the field in question is not retrieved, [PR #26](https://github.com/wheresvic/mongoose-field-encryption/pull/26).
