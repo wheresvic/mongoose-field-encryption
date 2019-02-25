@@ -14,7 +14,7 @@ const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encrypt
 describe("mongoose-field-encryption plugin db", function() {
   this.timeout(5000);
 
-  let NestedFieldEncryptionSchema = new mongoose.Schema({
+  const NestedFieldEncryptionSchema = new mongoose.Schema({
     toEncryptString: { type: String, required: true },
     toEncryptStringNotRetrieved: { type: String, select: false },
     toEncryptObject: {
@@ -29,7 +29,7 @@ describe("mongoose-field-encryption plugin db", function() {
     secret: "icanhazcheezburger" // should ideally be process.env.SECRET
   });
 
-  let NestedFieldEncryption = mongoose.model("NestedFieldEncryption", NestedFieldEncryptionSchema);
+  const NestedFieldEncryption = mongoose.model("NestedFieldEncryption", NestedFieldEncryptionSchema);
 
   before(() => {
     return mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
@@ -40,7 +40,7 @@ describe("mongoose-field-encryption plugin db", function() {
   });
 
   function getSut() {
-    let sut = new NestedFieldEncryption({
+    const sut = new NestedFieldEncryption({
       toEncryptString: "hide me!",
       toEncryptObject: {
         nested: "some stuff to encrypt"
@@ -84,7 +84,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt fields on save and decrypt fields on findById", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -102,7 +102,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt fields on save and decrypt fields on findOne", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -118,7 +118,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should store encrypted fields as plaintext on findOneAndUpdate", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -143,7 +143,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt string fields on update", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -168,7 +168,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt string fields on update without $set", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -190,7 +190,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt string fields on fineOneAndUpdate", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -215,7 +215,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt non string fields on update", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -245,7 +245,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should encrypt non string fields on fineOneAndUpdate without $set", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -272,7 +272,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should decrypt data on find() method call", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -302,7 +302,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should decrypt data on find() method call when only selected encrypted fields are retrieved", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -331,7 +331,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should not encrypt already encrypted fields", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut
@@ -361,7 +361,7 @@ describe("mongoose-field-encryption plugin db", function() {
 
   it("should decrypt data on find() method call even if some fields are marked as not selectables", function() {
     // given
-    let sut = getSut();
+    const sut = getSut();
 
     // when
     return sut

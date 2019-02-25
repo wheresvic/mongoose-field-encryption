@@ -9,7 +9,7 @@ mongoose.Promise = Promise;
 const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldEncryption;
 
 describe("mongoose-field-encryption plugin setup", function() {
-  let FieldEncryptionSchema = new mongoose.Schema({
+  const FieldEncryptionSchema = new mongoose.Schema({
     a: { type: String, required: true }
   });
 

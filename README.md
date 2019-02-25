@@ -4,13 +4,15 @@
 
 A simple symmetric encryption plugin for individual fields. The goal of this plugin is to encrypt data but still allow searching over fields with string values. This plugin relies on the Node `crypto` module. Encryption and decryption happen transparently during save and find.
 
-As of the stable 1.0.0 release, this plugin works on individual fields of any type. However, note that for non-string fields, the original value is set to undefined after encryption. This is because if the schema has defined a field as an array, it would not be possible to replace it with a string value.
+While this plugin works on individual fields of any type, note that for non-string fields, the original value is set to undefined after encryption. This is because if the schema has defined a field as an array, it would not be possible to replace it with a string value.
+
+As of the stable 2.3.0 release, this plugin requires provision of a custom salt generation function (which would always provide a constant salt given the secret) in order to retain symmetric decryption capability.
 
 Also consider [mongoose-encryption](https://github.com/joegoldbeck/mongoose-encryption) if you are looking to encrypt the entire document.
 
 ## How it works
 
-Encryption is performed using `AES-256-CBC`. To encrypt, the relevant fields are encrypted with the provided secret + random salt. The generated salt and the resulting encrypted value is concatenated together using a `:` character and the final string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
+Encryption is performed using `AES-256-CBC`. To encrypt, the relevant fields are encrypted with the provided secret + random salt (or a custom salt via the provided `saltGenerator` function). The generated salt and the resulting encrypted value is concatenated together using a `:` character and the final string is put in place of the actual value for `string` values. An extra `boolean` field with the prefix `__enc_` is added to the document which indicates if the provided field is encrypted or not.
 
 Fields which are either objects or of a different type are converted to strings using `JSON.stringify` and the value stored in an extra marker field of type `string` with a naming scheme of `__enc_` as prefix and `_d` as suffix on the original field name. The original field is then set to `undefined`. Please note that this might break any custom validation and application of this plugin on non-string fields needs to be done with care.
 
@@ -22,7 +24,7 @@ Fields which are either objects or of a different type are converted to strings 
 
 ## Installation
 
-`npm install mongoose-field-encryption`
+`npm install mongoose-field-encryption --save-exact`
 
 ## Security Notes
 
@@ -87,6 +89,7 @@ Also note that if you manually set the value `__enc_` prefix field to true then 
 - `fields` (required): an array list of the required fields
 - `secret` (required): a string cipher which is used to encrypt the data (don't lose this!)
 - `useAes256Ctr` (optional, default `false`): a boolean indicating whether the older `aes-256-ctr` algorithm should be used. Note that this is strictly a backwards compatibility feature and for new installations it is recommended to leave this at default.
+- `saltGenerator` (optional, default `const defaultSaltGenerator = secret => crypto.randomBytes(16);`): a function that should return either a `utf-8` encoded string that is 16 characters in length or a `Buffer` of length 16. This function is also passed the secret as shown in the default function example.
 
 ### Static methods
 
@@ -126,6 +129,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 - `npm publish`
 
 ## Changelog
+
+### 2.3.0
+
+- Add provision for a custom salt generator, [PR #27](https://github.com/wheresvic/mongoose-field-encryption/pull/27). Using a custom salt, _fixed_ search capability is now restored.
 
 ### 2.2.0
 
