@@ -44,7 +44,7 @@ const mongoose = require("mongoose");
 const mongooseFieldEncryption = require("mongoose-field-encryption").fieldEncryption;
 const Schema = mongoose.Schema;
 
-const Post = new Schema({
+const PostSchema = new Schema({
   title: String,
   message: String,
   references: {
@@ -53,7 +53,17 @@ const Post = new Schema({
   }
 });
 
-Post.plugin(mongooseFieldEncyption, { fields: ["message", "references"], secret: "some secret key" });
+PostSchema.plugin(mongooseFieldEncyption, { fields: ["message", "references"], secret: "some secret key" });
+
+const Post = mongoose.model("Post", PostSchema);
+
+const post = new Post({ title: "some text", message: "hello all" });
+
+post.save(function(err) {
+  console.log(post.title); // some text (only the message field was set to be encrypted via options)
+  console.log(post.message); // a9ad74603a91a2e97a803a367ab4e04d:93c64bf4c279d282deeaf738fabebe89
+  console.log(post.__enc_message); // true
+});
 ```
 
 The resulting documents will have the following format:
@@ -129,6 +139,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 - `npm publish`
 
 ## Changelog
+
+### 2.3.1
+
+- Update documentation
 
 ### 2.3.0
 
