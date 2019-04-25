@@ -196,7 +196,7 @@ describe("mongoose-field-encryption plugin db", function() {
             {
               $set: { toEncryptString: "snoop", __enc_toEncryptString: false }
             },
-            { new: true }
+            { new: true, useFindAndModify: false }
           );
         })
         .then(found => {
