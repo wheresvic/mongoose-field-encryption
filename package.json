@@ -42,7 +42,7 @@
     "mongoose": ">=4.11.0"
   },
   "devDependencies": {
-    "bluebird": "3.5.3",
+    "bluebird": "^3.5.4",
     "chai": "4.2.0",
     "coveralls": "3.0.3",
     "istanbul": "^0.4.5",
@@ -51,7 +51,7 @@
     "mongoose": "5.4.15",
     "nyc": "13.3.0",
     "release-it": "10.1.0",
-    "sinon": "7.2.4"
+    "sinon": "^7.3.2"
   },
   "release-it": {
     "pkgFiles": [
