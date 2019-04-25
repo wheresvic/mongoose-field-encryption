@@ -10,7 +10,7 @@ describe("basic usage", function() {
   this.timeout(5000);
 
   before(() => {
-    return mongoose.connect("mongodb://localhost:27017/csvfilereader", { useNewUrlParser: true });
+    return mongoose.connect("mongodb://localhost:27017/mongoose-field-encryption-test", { useNewUrlParser: true });
   });
 
   after(() => {
