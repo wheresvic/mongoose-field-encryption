@@ -94,6 +94,45 @@ The above also works for non-string fields. See changelog for more details.
 
 Also note that if you manually set the value `__enc_` prefix field to true then the encryption is not run on the corresponding field and this may result in the plain value being stored in the db.
 
+### Search over encrypted fields
+
+Note that in order to use this option a _fixed_ salt generator must be provided. See example as follows:
+
+```js
+const messageSchema = new Schema({
+  title: String,
+  message: String,
+  name: String
+});
+
+messageSchema.plugin(mongooseFieldEncryption, {
+  fields: ["message", "name"],
+  secret: "some secret key",
+  saltGenerator: function(secret) {
+    return "1234567890123456"; // should ideally use the secret to return a string of length 16
+  }
+});
+
+const title = "some text";
+const name = "victor";
+const message = "hello all";
+
+const Message = mongoose.model("Message", messageSchema);
+
+const messageToSave = new Message({ title, message, name });
+await messageToSave.save();
+
+// note that we are only providing the field we would like to search with
+const messageToSearchWith = new Message({ name });
+messageToSearchWith.encryptFieldsSync();
+
+// `messageToSearchWith.name` contains the encrypted string text
+const results = await Message.find({ name: messageToSearchWith.name });
+
+// results is an array of length 1 (assuming that there is only 1 message with the name "victor" in the collection)
+// and the message in the results array corresponds to the one saved previously
+```
+
 ### Options
 
 - `fields` (required): an array list of the required fields

@@ -76,7 +76,7 @@ describe("basic usage", function() {
     const messageToSave = new Message({ title, message, name });
     await messageToSave.save();
 
-    const messageToSearchWith = new Message({ title: "", message: "", name });
+    const messageToSearchWith = new Message({ name });
     messageToSearchWith.encryptFieldsSync();
 
     // when
