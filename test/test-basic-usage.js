@@ -51,7 +51,7 @@ describe("basic usage", function() {
     });
   });
 
-  it("should search for a document on an encrypted field", async function() {
+  it("should search for a document on an encrypted field", function(done) {
     // given
     const messageSchema = new Schema({
       title: String,
@@ -73,22 +73,28 @@ describe("basic usage", function() {
 
     const Message = mongoose.model("Message", messageSchema);
 
-    const messageToSave = new Message({ title, message, name });
-    await messageToSave.save();
+    const messageToSave = new Message({ title: title, message: message, name: name });
 
-    const messageToSearchWith = new Message({ name });
-    messageToSearchWith.encryptFieldsSync();
+    messageToSave
+      .save()
+      .then(function(savedMessage) {
+        const messageToSearchWith = new Message({ name: name });
+        messageToSearchWith.encryptFieldsSync();
 
-    // when
-    const results = await Message.find({ name: messageToSearchWith.name });
+        // when
+        return Message.find({ name: messageToSearchWith.name });
+      })
+      .then(function(results) {
+        // then
+        expect(results.length).to.equal(1);
+        const ret = results[0].toObject();
 
-    // then
-    expect(results.length).to.equal(1);
-    const ret = results[0].toObject();
+        expect(ret.title).to.equal(title);
+        expect(ret.message).to.equal(message);
+        expect(ret.name).to.equal(name);
 
-    expect(ret.title).to.equal(title);
-    expect(ret.message).to.equal(message);
-    expect(ret.name).to.equal(name);
+        done();
+      });
   });
 });
 
