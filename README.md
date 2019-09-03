@@ -18,7 +18,7 @@ Fields which are either objects or of a different type are converted to strings 
 
 ## Requirements
 
-- Node `>=4.4.7`
+- Node `>=6` (Use `2.3.4` for Node `>=4.4.7 && <=6.x.x`)
 - MongoDB `>=2.6.10`
 - Mongoose `>=4.0.0`
 
@@ -178,6 +178,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 - `npm publish`
 
 ## Changelog
+
+### 3.0.0
+
+- Drop Node 4 support
 
 ### 2.3.5
 
