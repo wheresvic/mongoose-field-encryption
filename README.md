@@ -179,6 +179,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
+### 3.0.1
+
+- Update development dependencies
+
 ### 3.0.0
 
 - Drop Node 4 support
