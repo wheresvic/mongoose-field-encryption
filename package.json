@@ -10,7 +10,8 @@
     "test": "mocha",
     "test:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' npm test",
     "test-coverage": "nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium-browser ./coverage/index.html",
-    "test-coverage:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium-browser ./coverage/index.html"
+    "test-coverage:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium-browser ./coverage/index.html",
+    "release-it": "release-it"
   },
   "repository": {
     "type": "git",
