@@ -53,7 +53,7 @@ const PostSchema = new Schema({
   }
 });
 
-PostSchema.plugin(mongooseFieldEncyption, { fields: ["message", "references"], secret: "some secret key" });
+PostSchema.plugin(mongooseFieldEncryption, { fields: ["message", "references"], secret: "some secret key" });
 
 const Post = mongoose.model("Post", PostSchema);
 
