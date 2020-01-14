@@ -179,17 +179,9 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
-### 3.0.3
+### 3.0.1, 3.0.2, 3.0.3, 3.0.4
 
 - Update development dependencies, fix unit tests, no functionality affected
-
-### 3.0.2
-
-- Update documentation, no functionality affected
-
-### 3.0.1
-
-- Update development dependencies, no functionality affected
 
 ### 3.0.0
 
