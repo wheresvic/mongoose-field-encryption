@@ -16,6 +16,7 @@ const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encrypt
 describe("basic usage", function() {
   this.timeout(5000);
 
+  /*
   //
   // Due to the fact that creating and closing a mongoose connection is not
   // a fully async operation, this test combined with the db tests sometimes
@@ -30,15 +31,20 @@ describe("basic usage", function() {
   if (process.env.CI === "true") {
     return;
   }
+  */
 
   before(function(done) {
-    mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
-    done();
+    mongoose
+      .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
+      .then(function() {
+        done();
+      });
   });
 
   after(function(done) {
-    mongoose.disconnect();
-    done();
+    mongoose.disconnect().then(function() {
+      done();
+    });
   });
 
   it("should save a document", function(done) {

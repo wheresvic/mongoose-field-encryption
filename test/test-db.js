@@ -15,13 +15,17 @@ describe("mongoose-field-encryption plugin db", function() {
   this.timeout(5000);
 
   before(function(done) {
-    mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
-    done();
+    mongoose
+      .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
+      .then(function() {
+        done();
+      });
   });
 
   after(function(done) {
-    mongoose.disconnect()
-    done();
+    mongoose.disconnect().then(function() {
+      done();
+    });
   });
 
   const MongooseSchema = {
