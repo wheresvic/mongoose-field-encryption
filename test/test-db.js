@@ -14,12 +14,14 @@ const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encrypt
 describe("mongoose-field-encryption plugin db", function() {
   this.timeout(5000);
 
-  before(() => {
-    return mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
+  before(function(done) {
+    mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
+    done();
   });
 
-  after(() => {
-    mongoose.connection.close();
+  after(function(done) {
+    mongoose.disconnect()
+    done();
   });
 
   const MongooseSchema = {

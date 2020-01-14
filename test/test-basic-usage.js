@@ -3,21 +3,31 @@
 const crypto = require("crypto");
 const expect = require("chai").expect;
 const mongoose = require("mongoose");
+const Promise = require("bluebird");
 const Schema = mongoose.Schema;
 
+mongoose.Promise = Promise;
 mongoose.set("bufferCommands", false);
 
 const mongooseFieldEncryption = require("../lib/mongoose-field-encryption").fieldEncryption;
 
+const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encryption-test";
+
 describe("basic usage", function() {
   this.timeout(5000);
 
-  before(() => {
-    return mongoose.connect("mongodb://localhost:27017/mongoose-field-encryption-test", { useNewUrlParser: true });
+  if (process.env.NODE_ENV === "CI") {
+    return;
+  }
+
+  before(function(done) {
+    mongoose.connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false });
+    done();
   });
 
-  after(() => {
-    mongoose.connection.close();
+  after(function(done) {
+    mongoose.disconnect();
+    done();
   });
 
   it("should save a document", function(done) {
