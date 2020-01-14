@@ -73,6 +73,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
           nested: "nested"
         }
       });
+
       const createCipherivSpy = sinon.spy(crypto, "createCipheriv");
 
       // when
@@ -97,6 +98,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
           nested: "test3"
         }
       });
+      
       sut.encryptFieldsSync();
       expect(sut.toEncrypt1).not.to.eql("test");
       expect(sut.toEncrypt2).not.to.eql("test2");
@@ -126,6 +128,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
           nested: "test3"
         }
       });
+
       sut.encryptFieldsSync();
       const createDecipherivSpy = sinon.spy(crypto, "createDecipheriv");
 
