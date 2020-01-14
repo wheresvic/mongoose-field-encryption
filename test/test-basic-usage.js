@@ -16,7 +16,7 @@ const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encrypt
 describe("basic usage", function() {
   this.timeout(5000);
 
-  if (process.env.NODE_ENV === "CI") {
+  if (process.env.CI === "true") {
     return;
   }
 
