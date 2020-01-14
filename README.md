@@ -179,49 +179,54 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ## Changelog
 
+### 3.0.3
+
+- Update development dependencies, fix unit tests, no functionality affected
+
 ### 3.0.2
 
-- Update documentation
+- Update documentation, no functionality affected
 
 ### 3.0.1
 
-- Update development dependencies
+- Update development dependencies, no functionality affected
 
 ### 3.0.0
 
-- Drop Node 4 support
+- *BREAKING:* Drop Node 4 support
 
 ### 2.3.5
 
-- Update development dependencies
+- Update development dependencies, no functionality affected
 
 ### 2.3.2, 2.3.3, 2.3.4
 
-- Update documentation
+- Update documentation, no functionality affected
 
 ### 2.3.1
 
-- Update documentation
+- Update documentation, no functionality affected
 
 ### 2.3.0
 
-- Add provision for a custom salt generator, [PR #27](https://github.com/wheresvic/mongoose-field-encryption/pull/27). Using a custom salt, _fixed_ search capability is now restored.
+- *FEATURE:* Add provision for a custom salt generator, [PR #27](https://github.com/wheresvic/mongoose-field-encryption/pull/27). 
+- *FIX:* Using a custom salt, _fixed_ search capability is now restored.
 
 ### 2.2.0
 
-- Update dependencies
+- Update dependencies, no functionality affected
 
 ### 2.1.3
 
-- Fix bug where decryption fails when the field in question is not retrieved, [PR #26](https://github.com/wheresvic/mongoose-field-encryption/pull/26).
+- *FIX:* Fix bug where decryption fails when the field in question is not retrieved, [PR #26](https://github.com/wheresvic/mongoose-field-encryption/pull/26).
 
 ### 2.1.1
 
-- Fix bug where data was not getting decrypted on a `find()`, [#23](https://github.com/wheresvic/mongoose-field-encryption/issues/23).
+- *FIX:* Fix bug where data was not getting decrypted on a `find()`, [#23](https://github.com/wheresvic/mongoose-field-encryption/issues/23).
 
 ### 2.0.0
 
-- Use `cipheriv` instead of plain `cipher`, [#17](https://github.com/wheresvic/mongoose-field-encryption/issues/17).
+- *BREAKING:* Use `cipheriv` instead of plain `cipher`, [#17](https://github.com/wheresvic/mongoose-field-encryption/issues/17).
 
   Note that this might break any _fixed_ search capability as the encrypted values are now based on a random salt.
 
@@ -229,10 +234,10 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 ### 1.2.0
 
-- Added support for `findOneAndUpdate` [https://github.com/wheresvic/mongoose-field-encryption/pull/20](https://github.com/wheresvic/mongoose-field-encryption/pull/20)
+- *FEATURE:* Added support for `findOneAndUpdate` [https://github.com/wheresvic/mongoose-field-encryption/pull/20](https://github.com/wheresvic/mongoose-field-encryption/pull/20)
 
 ### 1.1.0
 
-- Added support for mongoose 5 [https://github.com/wheresvic/mongoose-field-encryption/pull/16](https://github.com/wheresvic/mongoose-field-encryption/pull/16).
-- Removed mongoose dependency, moved to `peerDependencies`.
+- *FEATURE:* Added support for mongoose 5 [https://github.com/wheresvic/mongoose-field-encryption/pull/16](https://github.com/wheresvic/mongoose-field-encryption/pull/16).
+- *FIX:* Removed mongoose dependency, moved to `peerDependencies`.
 - Formatted source code using prettier.
