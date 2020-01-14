@@ -8,6 +8,8 @@ node_js:
   - "6"
 before_script:
   - npm install
-notifications:
+env:
+  - NODE_ENV=CI
+  notifications:
   email:
     - vic@smalldata.tech
