@@ -189,7 +189,7 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
-### 3.0.1, 3.0.2, 3.0.3, 3.0.4, 3.0.5
+### 3.0.1, 3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6
 
 - Update development dependencies, fix unit tests, no functionality affected
 - Add development db via docker (3.0.5)
