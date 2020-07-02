@@ -1,0 +1,19 @@
+version: "3.3"
+services:
+  db:
+    image: mongo
+    container_name: "mongoose-field-encryption-db"
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: "mongoose-field-encryption-test" # database name
+      MONGO_INITDB_ROOT_USERNAME: "root" # container root username
+      MONGO_INITDB_ROOT_PASSWORD: "mfe" # container root password
+    ports:
+      - "27017-27019:27017-27019"
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - mongoose-field-encryption-db:/data/db
+
+volumes:
+  mongoose-field-encryption-db:
+

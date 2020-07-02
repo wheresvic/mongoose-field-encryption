@@ -30,3 +30,8 @@ jspm_packages
 
 # IDE
 .vscode/
+
+# development
+development/docker-compose.yml
+development/init-mongo.js
+

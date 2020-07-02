@@ -160,28 +160,39 @@ const encrypted = fieldEncryption.encrypt('some text', 'secret'));
 const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 'some text'
 ```
 
-## Testing
+## Development
+
+As of version 3.0.5, one can setup a local development mongodb instance using docker:
+
+- copy `development/docker-compose-dev.yml` to `development/docker-compose.yml`
+- copy `development/init-mongo-dev.js` to `development/init-mongo.js`
+- run `docker-compose up` in the `development` folder
+
+Feel free to make changes to the default docker configuration as required.
+
+### Testing
 
 1. Install dependencies with `npm install` and [install mongo](http://docs.mongodb.org/manual/installation/) if you don't have it yet.
 2. Start mongo with `mongod`.
 3. Run tests with `npm test`. Additionally you can pass your own mongodb uri as an environment variable if you would like to test against your own database, for e.g. `URI='mongodb://username:password@127.0.0.1:27017/mongoose-field-encryption-test' npm test`
 
-## Publishing
+### Publishing
 
-### release-it
+#### release-it
 
 `release-it patch,minor,major`
 
-### Manual
+#### Manual
 
 - `npm version patch,minor,major`
 - `npm publish`
 
 ## Changelog
 
-### 3.0.1, 3.0.2, 3.0.3, 3.0.4
+### 3.0.1, 3.0.2, 3.0.3, 3.0.4, 3.0.5
 
 - Update development dependencies, fix unit tests, no functionality affected
+- Add development db via docker (3.0.5)
 
 ### 3.0.0
 
