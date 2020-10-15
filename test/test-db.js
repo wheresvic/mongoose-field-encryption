@@ -20,6 +20,8 @@ describe("mongoose-field-encryption plugin db", function () {
       .then(function () {
         done();
       });
+
+    mongoose.set("useFindAndModify", false);
   });
 
   after(function (done) {

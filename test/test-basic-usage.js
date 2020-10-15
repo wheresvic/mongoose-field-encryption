@@ -22,6 +22,8 @@ describe("basic usage", function () {
       .then(function () {
         done();
       });
+
+    mongoose.set("useFindAndModify", false);
   });
 
   after(function (done) {
