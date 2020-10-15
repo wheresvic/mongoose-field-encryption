@@ -49,8 +49,8 @@ const PostSchema = new Schema({
   message: String,
   references: {
     author: String,
-    date: Date
-  }
+    date: Date,
+  },
 });
 
 PostSchema.plugin(mongooseFieldEncryption, { fields: ["message", "references"], secret: "some secret key" });
@@ -59,7 +59,7 @@ const Post = mongoose.model("Post", PostSchema);
 
 const post = new Post({ title: "some text", message: "hello all" });
 
-post.save(function(err) {
+post.save(function (err) {
   console.log(post.title); // some text (only the message field was set to be encrypted via options)
   console.log(post.message); // a9ad74603a91a2e97a803a367ab4e04d:93c64bf4c279d282deeaf738fabebe89
   console.log(post.__enc_message); // true
@@ -102,15 +102,15 @@ Note that in order to use this option a _fixed_ salt generator must be provided.
 const messageSchema = new Schema({
   title: String,
   message: String,
-  name: String
+  name: String,
 });
 
 messageSchema.plugin(mongooseFieldEncryption, {
   fields: ["message", "name"],
   secret: "some secret key",
-  saltGenerator: function(secret) {
+  saltGenerator: function (secret) {
     return "1234567890123456"; // should ideally use the secret to return a string of length 16
-  }
+  },
 });
 
 const title = "some text";
@@ -188,6 +188,11 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 3.1.0
+
+- Add support for an optional synchronous secret function instead of a fixed string. Note that while this change should be backwards compatible, care should be taken as an issues with the secret could lead to irrecoverable documents!
+- Add support for `updateOne` ([https://mongoosejs.com/docs/api.html#query_Query-updateOne](https://mongoosejs.com/docs/api.html#query_Query-updateOne)).
 
 ### 3.0.1, 3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6
 

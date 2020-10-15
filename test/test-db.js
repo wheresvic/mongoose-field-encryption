@@ -287,7 +287,7 @@ describe("mongoose-field-encryption plugin db", function () {
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
-    
+
     it("should encrypt string fields on updateOne", function () {
       // given
       const sut = getSut(MongooseModel);
