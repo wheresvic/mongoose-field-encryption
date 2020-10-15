@@ -36,4 +36,14 @@ describe("mongoose-field-encryption plugin setup", function() {
     // then
     done();
   });
+
+  it("should initialize plugin with secret factory function", function(done) {
+    // when
+    FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
+      secret: () => "icanhazcheezburger"
+    });
+
+    // then
+    done();
+  });
 });
