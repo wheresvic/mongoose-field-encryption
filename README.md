@@ -189,10 +189,14 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 4.0.0
+
+- _FEATURE_: Add support for an optional synchronous secret function instead of a fixed string. Note that while this change should be backwards compatible, care should be taken as an issues with the secret could lead to irrecoverable documents!
+- Add support for `updateOne` ([https://mongoosejs.com/docs/api.html#query_Query-updateOne](https://mongoosejs.com/docs/api.html#query_Query-updateOne)).
+
 ### 3.1.0
 
-- Add support for an optional synchronous secret function instead of a fixed string. Note that while this change should be backwards compatible, care should be taken as an issues with the secret could lead to irrecoverable documents!
-- Add support for `updateOne` ([https://mongoosejs.com/docs/api.html#query_Query-updateOne](https://mongoosejs.com/docs/api.html#query_Query-updateOne)).
+- Do not use
 
 ### 3.0.1, 3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6
 
