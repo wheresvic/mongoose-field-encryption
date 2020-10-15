@@ -427,6 +427,159 @@ describe("mongoose-field-encryption plugin static methods", function() {
       throw new Error("Should not have encrypted using a bad iv");
     });
   });
+  
+  describe("aes-256-cbc with a synchronous secret function", function() {
+    it("should encrypt with a synchronous secret function", function() {
+      // given
+      const FieldEncryptionEncryptSynchronousSecretFunctionSchema = new mongoose.Schema({
+        noEncrypt: { type: String, required: true },
+        toEncrypt1: { type: String, required: true },
+        toEncrypt2: { type: String, required: true },
+        toEncryptObject: {
+          nested: { type: String }
+        }
+      });
+
+      FieldEncryptionEncryptSynchronousSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
+        secret: function() { return "letsdothis" }, // should ideally be process.env.SECRET
+        saltGenerator: function(secret) {
+          return "1234567890123456";
+        }
+      });
+
+      const FieldEncryptionEncryptSynchronousSecretFunctionTest = mongoose.model(
+        "FieldEncryptionEncryptSynchronousSecretFunctionTest",
+        FieldEncryptionEncryptSynchronousSecretFunctionSchema
+      );
+
+      const sut = new FieldEncryptionEncryptSynchronousSecretFunctionTest({
+        noEncrypt: "clear",
+        toEncrypt1: "some stuff",
+        toEncrypt2: "should be hidden",
+        toEncryptObject: {
+          nested: "nested"
+        }
+      });
+
+      // when
+      sut.encryptFieldsSync();
+
+      // then
+      expect(sut.noEncrypt).to.equal("clear");
+      expect(sut.__enc_noEncrypt).to.be.undefined;
+
+      expect(sut.__enc_toEncrypt1).to.be.true;
+      expect(sut.toEncrypt1).to.equal("31323334353637383930313233343536:5c568b1a61b7d1c61d93ce7523d29007");
+
+      expect(sut.__enc_toEncrypt2).to.be.true;
+      expect(sut.toEncrypt2).to.equal(
+        "31323334353637383930313233343536:2c81e40fc9c00edc33c857a0720fb9c50b5865f803dad888f251478ffa60135d"
+      );
+
+      expect(sut.__enc_toEncryptObject).to.be.true;
+      expect(sut.__enc_toEncryptObject_d).to.equal(
+        "31323334353637383930313233343536:d95f119990acab8c08f82a6b1c49ff856e6049d29ca1f96a794923c28d8e5baa"
+      );
+
+      sut.decryptFieldsSync();
+      expect(sut.__enc_toEncrypt1).to.be.false;
+      expect(sut.noEncrypt).to.eql("clear");
+      expect(sut.toEncrypt1).to.eql("some stuff");
+      expect(sut.toEncrypt2).to.eql("should be hidden");
+      expect(sut.toEncryptObject.nested).to.eql("nested");
+    });
+
+    it("should decrypt with a synchronous secret function", function() {
+      // given
+      const FieldEncryptionDecryptSynchronousSecretFunctionSchema = new mongoose.Schema({
+        noEncrypt: { type: String, required: true },
+        toEncrypt1: { type: String, required: true },
+        toEncrypt2: { type: String, required: true },
+        toEncryptObject: {
+          nested: { type: String }
+        }
+      });
+
+      FieldEncryptionDecryptSynchronousSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
+        secret: function() { return "letsdothis"; }, // should ideally be process.env.SECRET
+        saltGenerator: function(secret) {
+          return "1234567890123456";
+        }
+      });
+
+      const FieldEncryptionDecryptSynchronousSecretFunctionTest = mongoose.model(
+        "FieldEncryptionDecryptSynchronousSecretFunctionTest",
+        FieldEncryptionDecryptSynchronousSecretFunctionSchema
+      );
+
+      const sut = new FieldEncryptionDecryptSynchronousSecretFunctionTest({
+        _id: "5c73c4f17841f3557c130bab",
+        noEncrypt: "clear",
+        toEncrypt1: "31323334353637383930313233343536:5c568b1a61b7d1c61d93ce7523d29007",
+        toEncrypt2: "31323334353637383930313233343536:2c81e40fc9c00edc33c857a0720fb9c50b5865f803dad888f251478ffa60135d",
+        __enc_toEncrypt1: true,
+        __enc_toEncrypt2: true,
+        __enc_toEncryptObject_d:
+          "31323334353637383930313233343536:d95f119990acab8c08f82a6b1c49ff856e6049d29ca1f96a794923c28d8e5baa",
+        __enc_toEncryptObject: true
+      });
+
+      // when
+      sut.decryptFieldsSync();
+
+      // then
+      expect(sut.__enc_toEncrypt1).to.be.false;
+      expect(sut.noEncrypt).to.eql("clear");
+      expect(sut.toEncrypt1).to.eql("some stuff");
+      expect(sut.toEncrypt2).to.eql("should be hidden");
+      expect(sut.toEncryptObject.nested).to.eql("nested");
+    });
+
+    it("should throw an error when encrypting fields with an invalid custom secret function", function() {
+      // given
+      const FieldEncryptionBadSecretFunctionSchema = new mongoose.Schema({
+        noEncrypt: { type: String, required: true },
+        toEncrypt1: { type: String, required: true },
+        toEncrypt2: { type: String, required: true },
+        toEncryptObject: {
+          nested: { type: String }
+        }
+      });
+
+      FieldEncryptionBadSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
+        secret: function() { throw new Error("foobar"); }, // should ideally be process.env.SECRET
+      });
+
+      const FieldEncryptionBadSecretFunctionTest = mongoose.model(
+        "FieldEncryptionBadSecretFunctionTest",
+        FieldEncryptionBadSecretFunctionSchema
+      );
+
+      const sut = new FieldEncryptionBadSecretFunctionTest({
+        noEncrypt: "clear",
+        toEncrypt1: "some stuff",
+        toEncrypt2: "should be hidden",
+        toEncryptObject: {
+          nested: "nested"
+        }
+      });
+
+      // when
+      try {
+        sut.encryptFieldsSync();
+      } catch (err) {
+        // then
+        if (err.message && err.message === "foobar") {
+          return;
+        }
+      }
+
+      throw new Error("Should not have encrypted using a bad secret function");
+    });
+  });
 
   describe("aes-256-ctr (deprecated)", function() {
     const FieldEncryptionSchemaDeprecated = new mongoose.Schema({
