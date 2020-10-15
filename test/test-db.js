@@ -96,6 +96,52 @@ describe("mongoose-field-encryption plugin db", function() {
     runTests(NestedFieldEncryption, getSut, expectEncryptionValues, expectDecryptionValues);
   });
 
+  describe("simple setup with salt factory", function() {
+    const NestedFieldEncryptionSaltFactorySchema = new mongoose.Schema(MongooseSchema);
+
+    NestedFieldEncryptionSaltFactorySchema.plugin(
+      fieldEncryptionPlugin,
+      {
+          ...fieldEncryptionPluginOptions,
+          secret: () => fieldEncryptionPluginOptions.secret
+      }
+    );
+
+    const NestedFieldEncryptionSaltFactory = mongoose.model("NestedFieldEncryptionSaltFactory", NestedFieldEncryptionSaltFactorySchema);
+
+    function expectEncryptionValues(sut) {
+      expect(sut.__enc_toEncryptString).to.be.true;
+
+      expect(sut.toObject().toEncryptObject).to.be.undefined;
+      expect(sut.__enc_toEncryptObject).to.be.true;
+
+      expect(sut.toObject().toEncryptArray).to.be.undefined;
+      expect(sut.__enc_toEncryptArray).to.be.true;
+
+      expect(sut.toObject().toEncryptDate).to.be.undefined;
+      expect(sut.__enc_toEncryptDate).to.be.true;
+    }
+
+    function expectDecryptionValues(found) {
+      expect(found.toEncryptString).to.equal("hide me!");
+      expect(found.__enc_toEncryptString).to.be.false;
+
+      expect(JSON.stringify(found.toEncryptObject)).to.equal('{"nested":"some stuff to encrypt"}');
+      expect(found.__enc_toEncryptObject).to.be.false;
+      expect(found.__enc_toEncryptObject_d).to.equal("");
+
+      expect(JSON.stringify(found.toEncryptArray)).to.equal("[1,2,3]");
+      expect(found.__enc_toEncryptArray).to.be.false;
+      expect(found.__enc_toEncryptArray_d).to.equal("");
+
+      expect(JSON.stringify(found.toEncryptDate)).to.equal('"2017-01-28T22:04:08.338Z"');
+      expect(found.__enc_toEncryptDate).to.be.false;
+      expect(found.__enc_toEncryptDate_d).to.equal("");
+    }
+
+    runTests(NestedFieldEncryptionSaltFactory, getSut, expectEncryptionValues, expectDecryptionValues);
+  });
+
   describe("custom salt", function() {
     const NestedFieldEncryptionCustomSaltSchema = new mongoose.Schema(MongooseSchema);
 
