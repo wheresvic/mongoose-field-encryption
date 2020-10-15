@@ -8,9 +8,11 @@
   ],
   "scripts": {
     "test": "mocha",
+    "test:travis": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "test:travis:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "test:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' npm test",
-    "test-coverage": "nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium-browser ./coverage/index.html",
-    "test-coverage:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium-browser ./coverage/index.html",
+    "test-coverage": "nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium ./coverage/index.html",
+    "test-coverage:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium ./coverage/index.html",
     "release-it": "release-it"
   },
   "repository": {
@@ -47,10 +49,11 @@
     "chai": "4.2.0",
     "coveralls": "3.1.0",
     "mocha": "6.2.2",
-    "mongoose": "5.9.21",
+    "mocha-lcov-reporter": "1.3.0",
+    "mongoose": "5.10.9",
     "nyc": "15.1.0",
-    "release-it": "13.6.4",
-    "sinon": "9.0.2"
+    "release-it": "14.1.0",
+    "sinon": "9.2.0"
   },
   "release-it": {
     "hooks": {

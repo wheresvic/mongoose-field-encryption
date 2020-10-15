@@ -11,3 +11,5 @@ before_script:
 notifications:
   email:
     - vic@smalldata.tech
+script:
+  - npm run test:travis
