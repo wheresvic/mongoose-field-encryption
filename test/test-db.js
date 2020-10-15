@@ -99,10 +99,13 @@ describe("mongoose-field-encryption plugin db", function () {
   describe("simple setup with salt factory", function () {
     const NestedFieldEncryptionSaltFactorySchema = new mongoose.Schema(MongooseSchema);
 
-    NestedFieldEncryptionSaltFactorySchema.plugin(fieldEncryptionPlugin, {
-      ...fieldEncryptionPluginOptions,
-      secret: () => fieldEncryptionPluginOptions.secret,
-    });
+    const options = {};
+    const optionsWithSecret = Object.assign(options, fieldEncryptionPluginOptions);
+    optionsWithSecret.secret = function () {
+      return fieldEncryptionPluginOptions.secret;
+    };
+
+    NestedFieldEncryptionSaltFactorySchema.plugin(fieldEncryptionPlugin, optionsWithSecret);
 
     const NestedFieldEncryptionSaltFactory = mongoose.model(
       "NestedFieldEncryptionSaltFactory",
