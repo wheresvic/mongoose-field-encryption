@@ -287,6 +287,31 @@ describe("mongoose-field-encryption plugin db", function () {
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
+    
+    it("should encrypt string fields on updateOne", function () {
+      // given
+      const sut = getSut(MongooseModel);
+
+      // when
+      return sut
+        .save()
+        .then(() => {
+          expectEncryptionValues(sut);
+
+          return MongooseModel.updateOne(
+            { _id: sut._id },
+            { $set: { toEncryptString: "snoop", __enc_toEncryptString: false } }
+          );
+        })
+        .then(() => {
+          return MongooseModel.findById(sut._id);
+        })
+        .then((found) => {
+          // then
+          expect(found.__enc_toEncryptString).to.be.false;
+          expect(found.toEncryptString).to.equal("snoop");
+        });
+    });
 
     it("should encrypt string fields on update without $set", function () {
       // given
@@ -298,7 +323,7 @@ describe("mongoose-field-encryption plugin db", function () {
         .then(() => {
           expectEncryptionValues(sut);
 
-          return MongooseModel.update({ _id: sut._id }, { toEncryptString: "snoop" });
+          return MongooseModel.updateOne({ _id: sut._id }, { toEncryptString: "snoop" });
         })
         .then(() => {
           return MongooseModel.findById(sut._id);
@@ -345,7 +370,7 @@ describe("mongoose-field-encryption plugin db", function () {
         .then(() => {
           expectEncryptionValues(sut);
 
-          return MongooseModel.update(
+          return MongooseModel.updateOne(
             {
               _id: sut._id,
             },
@@ -461,7 +486,7 @@ describe("mongoose-field-encryption plugin db", function () {
         .then(() => {
           expectEncryptionValues(sut);
 
-          return MongooseModel.update(
+          return MongooseModel.updateOne(
             {
               _id: sut._id,
             },
