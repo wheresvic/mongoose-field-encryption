@@ -13,28 +13,28 @@ const mongooseFieldEncryption = require("../lib/mongoose-field-encryption").fiel
 
 const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encryption-test";
 
-describe("basic usage", function() {
+describe("basic usage", function () {
   this.timeout(5000);
 
-  before(function(done) {
+  before(function (done) {
     mongoose
       .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
-      .then(function() {
+      .then(function () {
         done();
       });
   });
 
-  after(function(done) {
-    mongoose.disconnect().then(function() {
+  after(function (done) {
+    mongoose.disconnect().then(function () {
       done();
     });
   });
 
-  it("should save a document", function(done) {
+  it("should save a document", function (done) {
     // given
     const postSchema = new Schema({
       title: String,
-      message: String
+      message: String,
     });
 
     postSchema.plugin(mongooseFieldEncryption, { fields: ["message"], secret: "some secret key" });
@@ -43,7 +43,7 @@ describe("basic usage", function() {
     const post = new Post({ title: "some text", message: "hello all" });
 
     // when
-    post.save(function(err) {
+    post.save(function (err) {
       // then
       if (err) {
         return done(err);
@@ -61,20 +61,20 @@ describe("basic usage", function() {
     });
   });
 
-  it("should search for a document on an encrypted field", function(done) {
+  it("should search for a document on an encrypted field", function (done) {
     // given
     const messageSchema = new Schema({
       title: String,
       message: String,
-      name: String
+      name: String,
     });
 
     messageSchema.plugin(mongooseFieldEncryption, {
       fields: ["message", "name"],
       secret: "some secret key",
-      saltGenerator: function(secret) {
+      saltGenerator: function (secret) {
         return "1234567890123456";
-      }
+      },
     });
 
     const title = "some text";
@@ -87,14 +87,14 @@ describe("basic usage", function() {
 
     messageToSave
       .save()
-      .then(function(savedMessage) {
+      .then(function (savedMessage) {
         const messageToSearchWith = new Message({ name: name });
         messageToSearchWith.encryptFieldsSync();
 
         // when
         return Message.find({ name: messageToSearchWith.name });
       })
-      .then(function(results) {
+      .then(function (results) {
         // then
         expect(results.length).to.equal(1);
         const ret = results[0].toObject();

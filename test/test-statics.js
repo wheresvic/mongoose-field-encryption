@@ -10,33 +10,33 @@ mongoose.Promise = Promise;
 
 const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldEncryption;
 
-describe("mongoose-field-encryption plugin static methods", function() {
-  describe("aes-256-cbc", function() {
+describe("mongoose-field-encryption plugin static methods", function () {
+  describe("aes-256-cbc", function () {
     const FieldEncryptionSchema = new mongoose.Schema({
       noEncrypt: { type: String, required: true },
       toEncrypt1: { type: String, required: true },
       toEncrypt2: { type: String, required: true },
       toEncryptObject: {
-        nested: { type: String }
-      }
+        nested: { type: String },
+      },
     });
 
     FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
       fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
-      secret: "letsdothis" // should ideally be process.env.SECRET
+      secret: "letsdothis", // should ideally be process.env.SECRET
     });
 
     const FieldEncryptionStaticsTest = mongoose.model("FieldEncryptionStaticsTest", FieldEncryptionSchema);
 
-    it("should encrypt fields", function() {
+    it("should encrypt fields", function () {
       // given
       const sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -63,15 +63,15 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should not encrypt already encrypted fields", function() {
+    it("should not encrypt already encrypted fields", function () {
       // given
       const sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       const createCipherivSpy = sinon.spy(crypto, "createCipheriv");
@@ -88,17 +88,17 @@ describe("mongoose-field-encryption plugin static methods", function() {
       createCipherivSpy.restore();
     });
 
-    it("should decrypt fields", function() {
+    it("should decrypt fields", function () {
       // given
       const sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
         toEncrypt1: "test",
         toEncrypt2: "test2",
         toEncryptObject: {
-          nested: "test3"
-        }
+          nested: "test3",
+        },
       });
-      
+
       sut.encryptFieldsSync();
       expect(sut.toEncrypt1).not.to.eql("test");
       expect(sut.toEncrypt2).not.to.eql("test2");
@@ -118,15 +118,15 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.equal("test3");
     });
 
-    it("should ignore multiple decrypt field calls", function() {
+    it("should ignore multiple decrypt field calls", function () {
       // given
       const sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
         toEncrypt1: "test",
         toEncrypt2: "test2",
         toEncryptObject: {
-          nested: "test3"
-        }
+          nested: "test3",
+        },
       });
 
       sut.encryptFieldsSync();
@@ -143,7 +143,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(decryptionCountAfterTwoDecryptFieldCalls);
     });
 
-    it("should strip encryption field markers", function() {
+    it("should strip encryption field markers", function () {
       // given
       const sut = new FieldEncryptionStaticsTest({
         noEncrypt: "clear",
@@ -152,10 +152,10 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt2: "yo",
         __enc_toEncrypt2: false,
         toEncryptObject: {
-          nested: "nested"
+          nested: "nested",
         },
         __enc_toEncryptObject: false,
-        __enc_toEncryptObject_d: ""
+        __enc_toEncryptObject_d: "",
       });
 
       // when
@@ -174,24 +174,24 @@ describe("mongoose-field-encryption plugin static methods", function() {
     });
   });
 
-  describe("aes-256-cbc with custom salt", function() {
-    it("should encrypt with a custom string salt", function() {
+  describe("aes-256-cbc with custom salt", function () {
+    it("should encrypt with a custom string salt", function () {
       // given
       const FieldEncryptionEncryptCustomSaltStringSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionEncryptCustomSaltStringSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
         secret: "letsdothis", // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        saltGenerator: function (secret) {
           return "1234567890123456";
-        }
+        },
       });
 
       const FieldEncryptionEncryptCustomSaltStringTest = mongoose.model(
@@ -204,8 +204,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -236,23 +236,23 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should decrypt with a custom string salt", function() {
+    it("should decrypt with a custom string salt", function () {
       // given
       const FieldEncryptionDecryptCustomSaltStringSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionDecryptCustomSaltStringSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
         secret: "letsdothis", // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        saltGenerator: function (secret) {
           return "1234567890123456";
-        }
+        },
       });
 
       const FieldEncryptionDecryptCustomSaltStringTest = mongoose.model(
@@ -269,7 +269,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
         __enc_toEncrypt2: true,
         __enc_toEncryptObject_d:
           "31323334353637383930313233343536:d95f119990acab8c08f82a6b1c49ff856e6049d29ca1f96a794923c28d8e5baa",
-        __enc_toEncryptObject: true
+        __enc_toEncryptObject: true,
       });
 
       // when
@@ -283,23 +283,23 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should throw an error when encrypting fields with an invalid custom string salt", function() {
+    it("should throw an error when encrypting fields with an invalid custom string salt", function () {
       // given
       const FieldEncryptionCustomSaltBadStringSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionCustomSaltBadStringSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
         secret: "letsdothis", // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        saltGenerator: function (secret) {
           return "123456789012345"; // only 15 chars
-        }
+        },
       });
 
       const FieldEncryptionCustomSaltBadStringTest = mongoose.model(
@@ -312,8 +312,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -329,23 +329,23 @@ describe("mongoose-field-encryption plugin static methods", function() {
       throw new Error("Should not have encrypted using a bad iv");
     });
 
-    it("should throw an error when encrypting fields with an invalid custom buffer salt", function() {
+    it("should throw an error when encrypting fields with an invalid custom buffer salt", function () {
       // given
       const FieldEncryptionCustomSaltBadBufferSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionCustomSaltBadBufferSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
         secret: "letsdothis", // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        saltGenerator: function (secret) {
           return crypto.randomBytes(200);
-        }
+        },
       });
 
       const FieldEncryptionCustomSaltBadBufferTest = mongoose.model(
@@ -358,8 +358,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -378,23 +378,23 @@ describe("mongoose-field-encryption plugin static methods", function() {
       throw new Error("Should not have encrypted using a bad iv");
     });
 
-    it("should throw an error when encrypting fields with an invalid custom salt", function() {
+    it("should throw an error when encrypting fields with an invalid custom salt", function () {
       // given
       const FieldEncryptionCustomBadSaltSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionCustomBadSaltSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
         secret: "letsdothis", // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        saltGenerator: function (secret) {
           return { salt: secret };
-        }
+        },
       });
 
       const FieldEncryptionCustomBadSaltTest = mongoose.model(
@@ -407,8 +407,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -427,25 +427,27 @@ describe("mongoose-field-encryption plugin static methods", function() {
       throw new Error("Should not have encrypted using a bad iv");
     });
   });
-  
-  describe("aes-256-cbc with a synchronous secret function", function() {
-    it("should encrypt with a synchronous secret function", function() {
+
+  describe("aes-256-cbc with a synchronous secret function", function () {
+    it("should encrypt with a synchronous secret function", function () {
       // given
       const FieldEncryptionEncryptSynchronousSecretFunctionSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionEncryptSynchronousSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
-        secret: function() { return "letsdothis" }, // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        secret: function () {
+          return "letsdothis";
+        }, // should ideally be process.env.SECRET
+        saltGenerator: function (secret) {
           return "1234567890123456";
-        }
+        },
       });
 
       const FieldEncryptionEncryptSynchronousSecretFunctionTest = mongoose.model(
@@ -458,8 +460,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -490,23 +492,25 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should decrypt with a synchronous secret function", function() {
+    it("should decrypt with a synchronous secret function", function () {
       // given
       const FieldEncryptionDecryptSynchronousSecretFunctionSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionDecryptSynchronousSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
-        secret: function() { return "letsdothis"; }, // should ideally be process.env.SECRET
-        saltGenerator: function(secret) {
+        secret: function () {
+          return "letsdothis";
+        }, // should ideally be process.env.SECRET
+        saltGenerator: function (secret) {
           return "1234567890123456";
-        }
+        },
       });
 
       const FieldEncryptionDecryptSynchronousSecretFunctionTest = mongoose.model(
@@ -523,7 +527,7 @@ describe("mongoose-field-encryption plugin static methods", function() {
         __enc_toEncrypt2: true,
         __enc_toEncryptObject_d:
           "31323334353637383930313233343536:d95f119990acab8c08f82a6b1c49ff856e6049d29ca1f96a794923c28d8e5baa",
-        __enc_toEncryptObject: true
+        __enc_toEncryptObject: true,
       });
 
       // when
@@ -537,20 +541,22 @@ describe("mongoose-field-encryption plugin static methods", function() {
       expect(sut.toEncryptObject.nested).to.eql("nested");
     });
 
-    it("should throw an error when encrypting fields with an invalid custom secret function", function() {
+    it("should throw an error when encrypting fields with an invalid custom secret function", function () {
       // given
       const FieldEncryptionBadSecretFunctionSchema = new mongoose.Schema({
         noEncrypt: { type: String, required: true },
         toEncrypt1: { type: String, required: true },
         toEncrypt2: { type: String, required: true },
         toEncryptObject: {
-          nested: { type: String }
-        }
+          nested: { type: String },
+        },
       });
 
       FieldEncryptionBadSecretFunctionSchema.plugin(fieldEncryptionPlugin, {
         fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
-        secret: function() { throw new Error("foobar"); }, // should ideally be process.env.SECRET
+        secret: function () {
+          throw new Error("foobar");
+        }, // should ideally be process.env.SECRET
       });
 
       const FieldEncryptionBadSecretFunctionTest = mongoose.model(
@@ -563,8 +569,8 @@ describe("mongoose-field-encryption plugin static methods", function() {
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when
@@ -581,20 +587,20 @@ describe("mongoose-field-encryption plugin static methods", function() {
     });
   });
 
-  describe("aes-256-ctr (deprecated)", function() {
+  describe("aes-256-ctr (deprecated)", function () {
     const FieldEncryptionSchemaDeprecated = new mongoose.Schema({
       noEncrypt: { type: String, required: true },
       toEncrypt1: { type: String, required: true },
       toEncrypt2: { type: String, required: true },
       toEncryptObject: {
-        nested: { type: String }
-      }
+        nested: { type: String },
+      },
     });
 
     FieldEncryptionSchemaDeprecated.plugin(fieldEncryptionPlugin, {
       fields: ["toEncrypt1", "toEncrypt2", "toEncryptObject"],
       secret: "letsdothis", // should ideally be process.env.SECRET
-      useAes256Ctr: true
+      useAes256Ctr: true,
     });
 
     const FieldEncryptionStaticsTestDeprecated = mongoose.model(
@@ -602,15 +608,15 @@ describe("mongoose-field-encryption plugin static methods", function() {
       FieldEncryptionSchemaDeprecated
     );
 
-    it("should encrypt and decrypt fields", function() {
+    it("should encrypt and decrypt fields", function () {
       // given
       const sut = new FieldEncryptionStaticsTestDeprecated({
         noEncrypt: "clear",
         toEncrypt1: "some stuff",
         toEncrypt2: "should be hidden",
         toEncryptObject: {
-          nested: "nested"
-        }
+          nested: "nested",
+        },
       });
 
       // when

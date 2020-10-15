@@ -11,19 +11,19 @@ const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldE
 
 const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encryption-test";
 
-describe("mongoose-field-encryption plugin db", function() {
+describe("mongoose-field-encryption plugin db", function () {
   this.timeout(5000);
 
-  before(function(done) {
+  before(function (done) {
     mongoose
       .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
-      .then(function() {
+      .then(function () {
         done();
       });
   });
 
-  after(function(done) {
-    mongoose.disconnect().then(function() {
+  after(function (done) {
+    mongoose.disconnect().then(function () {
       done();
     });
   });
@@ -32,20 +32,20 @@ describe("mongoose-field-encryption plugin db", function() {
     toEncryptString: { type: String, required: true },
     toEncryptStringNotRetrieved: { type: String, select: false },
     toEncryptObject: {
-      nested: String
+      nested: String,
     },
     toEncryptArray: [],
-    toEncryptDate: Date
+    toEncryptDate: Date,
   };
 
   function getSut(MongooseModel) {
     const sut = new MongooseModel({
       toEncryptString: "hide me!",
       toEncryptObject: {
-        nested: "some stuff to encrypt"
+        nested: "some stuff to encrypt",
       },
       toEncryptArray: [1, 2, 3],
-      toEncryptDate: new Date(1485641048338)
+      toEncryptDate: new Date(1485641048338),
     });
 
     return sut;
@@ -53,10 +53,10 @@ describe("mongoose-field-encryption plugin db", function() {
 
   const fieldEncryptionPluginOptions = {
     fields: ["toEncryptString", "toEncryptObject", "toEncryptArray", "toEncryptDate", "toEncryptStringNotRetrieved"],
-    secret: "icanhazcheezburger" // should ideally be process.env.SECRET
+    secret: "icanhazcheezburger", // should ideally be process.env.SECRET
   };
 
-  describe("simple setup", function() {
+  describe("simple setup", function () {
     const NestedFieldEncryptionSchema = new mongoose.Schema(MongooseSchema);
 
     NestedFieldEncryptionSchema.plugin(fieldEncryptionPlugin, fieldEncryptionPluginOptions);
@@ -96,18 +96,18 @@ describe("mongoose-field-encryption plugin db", function() {
     runTests(NestedFieldEncryption, getSut, expectEncryptionValues, expectDecryptionValues);
   });
 
-  describe("simple setup with salt factory", function() {
+  describe("simple setup with salt factory", function () {
     const NestedFieldEncryptionSaltFactorySchema = new mongoose.Schema(MongooseSchema);
 
-    NestedFieldEncryptionSaltFactorySchema.plugin(
-      fieldEncryptionPlugin,
-      {
-          ...fieldEncryptionPluginOptions,
-          secret: () => fieldEncryptionPluginOptions.secret
-      }
-    );
+    NestedFieldEncryptionSaltFactorySchema.plugin(fieldEncryptionPlugin, {
+      ...fieldEncryptionPluginOptions,
+      secret: () => fieldEncryptionPluginOptions.secret,
+    });
 
-    const NestedFieldEncryptionSaltFactory = mongoose.model("NestedFieldEncryptionSaltFactory", NestedFieldEncryptionSaltFactorySchema);
+    const NestedFieldEncryptionSaltFactory = mongoose.model(
+      "NestedFieldEncryptionSaltFactory",
+      NestedFieldEncryptionSaltFactorySchema
+    );
 
     function expectEncryptionValues(sut) {
       expect(sut.__enc_toEncryptString).to.be.true;
@@ -142,12 +142,12 @@ describe("mongoose-field-encryption plugin db", function() {
     runTests(NestedFieldEncryptionSaltFactory, getSut, expectEncryptionValues, expectDecryptionValues);
   });
 
-  describe("custom salt", function() {
+  describe("custom salt", function () {
     const NestedFieldEncryptionCustomSaltSchema = new mongoose.Schema(MongooseSchema);
 
     NestedFieldEncryptionCustomSaltSchema.plugin(
       fieldEncryptionPlugin,
-      Object.assign({ saltGenerator: secret => secret.slice(0, 16) }, fieldEncryptionPluginOptions)
+      Object.assign({ saltGenerator: (secret) => secret.slice(0, 16) }, fieldEncryptionPluginOptions)
     );
 
     const NestedFieldEncryptionCustomSalt = mongoose.model(
@@ -199,7 +199,7 @@ describe("mongoose-field-encryption plugin db", function() {
   });
 
   function runTests(MongooseModel, getSut, expectEncryptionValues, expectDecryptionValues) {
-    it("should encrypt fields on save and decrypt fields on findById", function() {
+    it("should encrypt fields on save and decrypt fields on findById", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -212,12 +212,12 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           expectDecryptionValues(found);
         });
     });
 
-    it("should encrypt fields on save and decrypt fields on findOne", function() {
+    it("should encrypt fields on save and decrypt fields on findOne", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -228,12 +228,12 @@ describe("mongoose-field-encryption plugin db", function() {
           expectEncryptionValues(sut);
           return MongooseModel.findOne({ _id: sut._id });
         })
-        .then(found => {
+        .then((found) => {
           expectDecryptionValues(found);
         });
     });
 
-    it("should store encrypted fields as plaintext on findOneAndUpdate", function() {
+    it("should store encrypted fields as plaintext on findOneAndUpdate", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -246,19 +246,19 @@ describe("mongoose-field-encryption plugin db", function() {
           return MongooseModel.findOneAndUpdate(
             { _id: sut._id },
             {
-              $set: { toEncryptString: "snoop", __enc_toEncryptString: false }
+              $set: { toEncryptString: "snoop", __enc_toEncryptString: false },
             },
             { new: true, useFindAndModify: false }
           );
         })
-        .then(found => {
+        .then((found) => {
           // then
           expect(found.__enc_toEncryptString).to.be.false;
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
 
-    it("should encrypt string fields on update", function() {
+    it("should encrypt string fields on update", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -276,14 +276,14 @@ describe("mongoose-field-encryption plugin db", function() {
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           // then
           expect(found.__enc_toEncryptString).to.be.false;
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
 
-    it("should encrypt string fields on update without $set", function() {
+    it("should encrypt string fields on update without $set", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -298,14 +298,14 @@ describe("mongoose-field-encryption plugin db", function() {
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           // then
           expect(found.__enc_toEncryptString).to.be.false;
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
 
-    it("should encrypt string fields on fineOneAndUpdate", function() {
+    it("should encrypt string fields on fineOneAndUpdate", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -323,14 +323,14 @@ describe("mongoose-field-encryption plugin db", function() {
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           // then
           expect(found.__enc_toEncryptString).to.be.false;
           expect(found.toEncryptString).to.equal("snoop");
         });
     });
 
-    it("should encrypt non string fields on update", function() {
+    it("should encrypt non string fields on update", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -342,25 +342,25 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.update(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
               $set: {
                 toEncryptObject: { nested: "snoop" },
-                __enc_toEncryptObject: false
-              }
+                __enc_toEncryptObject: false,
+              },
             }
           );
         })
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           expect(found.toEncryptObject.nested).to.eql("snoop");
         });
     });
 
-    it("should encrypt non string fields on fineOneAndUpdate without $set", function() {
+    it("should encrypt non string fields on fineOneAndUpdate without $set", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -372,22 +372,22 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.findOneAndUpdate(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
-              toEncryptObject: { nested: "snoop" }
+              toEncryptObject: { nested: "snoop" },
             }
           );
         })
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           expect(found.toEncryptObject.nested).to.eql("snoop");
         });
     });
 
-    it("should decrypt data on find() method call", function() {
+    it("should decrypt data on find() method call", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -399,25 +399,25 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.findOneAndUpdate(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
               toEncryptString: "yaddayadda",
-              toEncryptObject: { nested: "snoop" }
+              toEncryptObject: { nested: "snoop" },
             }
           );
         })
         .then(() => {
           return MongooseModel.find({ _id: sut._id });
         })
-        .then(foundArray => {
+        .then((foundArray) => {
           const found = foundArray[0];
           expect(found.toEncryptString).to.eql("yaddayadda");
           expect(found.toEncryptObject.nested).to.eql("snoop");
         });
     });
 
-    it("should decrypt data on find() method call when only selected encrypted fields are retrieved", function() {
+    it("should decrypt data on find() method call when only selected encrypted fields are retrieved", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -429,24 +429,24 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.findOneAndUpdate(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
               toEncryptString: "yaddayadda",
-              toEncryptObject: { nested: "snoop" }
+              toEncryptObject: { nested: "snoop" },
             }
           );
         })
         .then(() => {
           return MongooseModel.find({ _id: sut._id }, "__enc_toEncryptString toEncryptString");
         })
-        .then(foundArray => {
+        .then((foundArray) => {
           const found = foundArray[0];
           expect(found.toEncryptString).to.equal("yaddayadda");
         });
     });
 
-    it("should not encrypt already encrypted fields", function() {
+    it("should not encrypt already encrypted fields", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -458,25 +458,25 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.update(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
               $set: {
                 toEncryptString: "already encrypted string",
-                __enc_toEncryptObject: true
-              }
+                __enc_toEncryptObject: true,
+              },
             }
           );
         })
         .then(() => {
           return MongooseModel.findById(sut._id);
         })
-        .then(found => {
+        .then((found) => {
           expect(found.toEncryptString).to.eql("already encrypted string");
         });
     });
 
-    it("should decrypt data on find() method call even if some fields are marked as not selectables", function() {
+    it("should decrypt data on find() method call even if some fields are marked as not selectables", function () {
       // given
       const sut = getSut(MongooseModel);
 
@@ -488,19 +488,19 @@ describe("mongoose-field-encryption plugin db", function() {
 
           return MongooseModel.findOneAndUpdate(
             {
-              _id: sut._id
+              _id: sut._id,
             },
             {
               toEncryptString: "yaddayadda",
               toEncryptObject: { nested: "snoop" },
-              toEncryptStringNotRetrieved: "dubidubida"
+              toEncryptStringNotRetrieved: "dubidubida",
             }
           );
         })
         .then(() => {
           return MongooseModel.find({ _id: sut._id });
         })
-        .then(foundArray => {
+        .then((foundArray) => {
           const found = foundArray[0];
           expect(found.toEncryptString).to.equal("yaddayadda");
           expect(found.toEncryptStringNotRetrieved).to.be.undefined;
