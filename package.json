@@ -9,10 +9,10 @@
   "scripts": {
     "test": "mocha",
     "test:travis": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "test:travis:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "test:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' npm test",
     "test-coverage": "nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium ./coverage/index.html",
     "test-coverage:auth": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha && chromium ./coverage/index.html",
+    "test-coverage:auth:coveralls": "URI='mongodb://mfe:mfe@127.0.0.1:27017/mongoose-field-encryption-test' nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "release-it": "release-it"
   },
   "repository": {
