@@ -74,18 +74,18 @@ describe("mongoose-field-encryption plugin static methods", function () {
         },
       });
 
-      const createCipherivSpy = sinon.spy(crypto, "createCipheriv");
+      const createCipherivivSpy = sinon.spy(crypto, "createCipheriviv");
 
       // when
       sut.encryptFieldsSync();
-      const encryptedFieldCount = createCipherivSpy.callCount;
+      const encryptedFieldCount = createCipherivivSpy.callCount;
       sut.encryptFieldsSync();
-      const encryptedFieldCountAfterTwoEncryptFieldCalls = createCipherivSpy.callCount;
+      const encryptedFieldCountAfterTwoEncryptFieldCalls = createCipherivivSpy.callCount;
 
       // then
       expect(encryptedFieldCount).to.eql(3);
       expect(encryptedFieldCountAfterTwoEncryptFieldCalls).to.eql(3);
-      createCipherivSpy.restore();
+      createCipherivivSpy.restore();
     });
 
     it("should decrypt fields", function () {
@@ -130,13 +130,13 @@ describe("mongoose-field-encryption plugin static methods", function () {
       });
 
       sut.encryptFieldsSync();
-      const createDecipherivSpy = sinon.spy(crypto, "createDecipheriv");
+      const createDecipherivivSpy = sinon.spy(crypto, "createDecipheriviv");
 
       // when
       sut.decryptFieldsSync();
-      const decryptionCount = createDecipherivSpy.callCount;
+      const decryptionCount = createDecipherivivSpy.callCount;
       sut.decryptFieldsSync();
-      const decryptionCountAfterTwoDecryptFieldCalls = createDecipherivSpy.callCount;
+      const decryptionCountAfterTwoDecryptFieldCalls = createDecipherivivSpy.callCount;
 
       // then
       expect(decryptionCount).to.eql(3);
