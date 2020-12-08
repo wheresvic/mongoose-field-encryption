@@ -1,6 +1,6 @@
 # mongoose-field-encryption
 
-[![Build Status](https://travis-ci.org/wheresvic/mongoose-field-encryption.svg?branch=master)](https://travis-ci.org/wheresvic/mongoose-field-encryption) [![Coverage Status](https://coveralls.io/repos/github/wheresvic/mongoose-field-encryption/badge.svg?branch=master)](https://coveralls.io/github/wheresvic/mongoose-field-encryption?branch=master)
+![Build Status](https://github.com/wheresvic/mongoose-field-encryption/workflows/ci-test/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/wheresvic/mongoose-field-encryption/badge.svg?branch=master)](https://coveralls.io/github/wheresvic/mongoose-field-encryption?branch=master)
 
 A simple symmetric encryption plugin for individual fields. The goal of this plugin is to encrypt data but still allow searching over fields with string values. This plugin relies on the Node `crypto` module. Encryption and decryption happen transparently during save and find.
 
@@ -160,6 +160,52 @@ const encrypted = fieldEncryption.encrypt('some text', 'secret'));
 const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 'some text'
 ```
 
+### encryption of nested fields
+
+Note that while this plugin is designed to encrypt only top level fields, nested fields can be easily encrypted by creating a mongoose schema for the nested objects and adding the plugin to them.
+
+See comment for discussion: [https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776](https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776)
+
+Example
+
+```js
+const mongoose = require('mongoose');
+const mongooseFieldEncryption = require("mongoose-field-encryption").fieldEncryption;
+
+const CredentialSchema = new mongoose.Schema({
+    type: {
+        required: true,
+        type: String,
+    },
+    value: {
+        required: true,
+        type: String,
+    },
+});
+
+CredentialSchema.plugin(mongooseFieldEncryption, {
+    fields: ["value"],
+    secret: process.env.MONGOOSE_ENCRYPTION_KEY,
+});
+
+const accountSchema = new mongoose.Schema({
+    provider: {
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true,
+    },
+    credentials: [CredentialSchema],
+    owner: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+});
+
+module.exports = mongoose.model('Account', accountSchema);
+``` 
+
 ## Development
 
 As of version 3.0.5, one can setup a local development mongodb instance using docker:
@@ -188,6 +234,11 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 4.0.1
+
+- Update documentation to add nested field encryption example
+- Switch from Travis to Github actions
 
 ### 4.0.0
 
