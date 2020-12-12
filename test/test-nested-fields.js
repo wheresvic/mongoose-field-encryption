@@ -158,7 +158,7 @@ describe("nested fields", function () {
             return done(err);
           }
 
-          expect(post.authors[0].name).to.equal("something else");
+          expect(post.title).to.equal("something else");
           done();
         });
       });
