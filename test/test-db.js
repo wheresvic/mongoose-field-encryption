@@ -16,7 +16,13 @@ describe("mongoose-field-encryption plugin db", function () {
 
   before(function (done) {
     mongoose
-      .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
+      .connect(uri, {
+        useNewUrlParser: true,
+        promiseLibrary: Promise,
+        autoIndex: false,
+        useUnifiedTopology: true,
+        keepAlive: 1,
+      })
       .then(function () {
         done();
       });
@@ -201,6 +207,72 @@ describe("mongoose-field-encryption plugin db", function () {
     }
 
     runTests(NestedFieldEncryptionCustomSalt, getSut, expectEncryptionValues, expectDecryptionValues);
+  });
+
+  describe("subdocument encryption", function () {
+    it("should encrypt and decrypt subdocuments", function (done) {
+      const UserExtraSchema = new mongoose.Schema({
+        city: { type: String },
+        country: { type: String },
+        address: { type: String },
+        postalCode: { type: String },
+      });
+
+      UserExtraSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["address"],
+        secret: "icanhazcheeseburger",
+        saltGenerator: (secret) => secret.slice(0, 16),
+      });
+
+      const UserSchema = new mongoose.Schema(
+        {
+          name: { type: String, required: true },
+          surname: { type: String, required: true },
+          email: { type: String, required: true },
+          extra: UserExtraSchema,
+        },
+        { collection: "users" }
+      );
+
+      UserSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["name", "surname"],
+        secret: "icanhazcheeseburger",
+        saltGenerator: (secret) => secret.slice(0, 16),
+      });
+
+      const UserModel = mongoose.model("User", UserSchema);
+
+      // given
+      const sut = new UserModel({
+        name: "snoop",
+        surname: "dawg",
+        email: "snoop.dawg@dadadadada.com",
+        extra: {
+          city: "cali",
+          country: "usa",
+          address: "bowchickabowwow",
+          postalCode: "90210",
+        },
+      });
+
+      // when
+      sut
+        .save()
+        .then(() => {
+          // then
+          expect(sut.name).to.equal("31393663303733396265616337353364:5b8c2d2160c935152c7dd6bf6a31f894");
+          expect(sut.extra.address).to.equal("31393663303733396265616337353364:b9610446ddefafef177ffe0cdfec2d2d");
+
+          return UserModel.findById(sut._id);
+        })
+        .then((found) => {
+          expect(found.name).to.equal("snoop");
+          expect(found.extra.address).to.equal("bowchickabowwow");
+        })
+        .finally(() => {
+          done();
+        });
+    });
   });
 
   function runTests(MongooseModel, getSut, expectEncryptionValues, expectDecryptionValues) {

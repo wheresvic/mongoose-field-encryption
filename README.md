@@ -164,47 +164,46 @@ const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 
 
 Note that while this plugin is designed to encrypt only top level fields, nested fields can be easily encrypted by creating a mongoose schema for the nested objects and adding the plugin to them.
 
-See comment for discussion: [https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776](https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776)
+See comment for discussion: [https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776](https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776). 
 
-Example
+_Please also note that this example is provided as a best-effort basis and this plugin does not take responsibility for what quirks mongoose might bring if you use this feature._
+
+See relevant test in `test/test-db.js`:
 
 ```js
-const mongoose = require('mongoose');
-const mongooseFieldEncryption = require("mongoose-field-encryption").fieldEncryption;
+// subdocument encryption
 
-const CredentialSchema = new mongoose.Schema({
-    type: {
-        required: true,
-        type: String,
-    },
-    value: {
-        required: true,
-        type: String,
-    },
+const UserExtraSchema = new mongoose.Schema({
+  city: { type: String },
+  country: { type: String },
+  address: { type: String },
+  postalCode: { type: String },
 });
 
-CredentialSchema.plugin(mongooseFieldEncryption, {
-    fields: ["value"],
-    secret: process.env.MONGOOSE_ENCRYPTION_KEY,
+UserExtraSchema.plugin(fieldEncryptionPlugin, {
+  fields: ["address"],
+  secret: "icanhazcheeseburger",
+  saltGenerator: (secret) => secret.slice(0, 16),
 });
 
-const accountSchema = new mongoose.Schema({
-    provider: {
-        type: String,
-        required: true,
-        lowercase: true,
-        trim: true,
-    },
-    credentials: [CredentialSchema],
-    owner: {
-        required: true,
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
+const UserSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    surname: { type: String, required: true },
+    email: { type: String, required: true },
+    extra: UserExtraSchema,
+  },
+  { collection: "users" }
+);
+
+UserSchema.plugin(fieldEncryptionPlugin, {
+  fields: ["name", "surname"],
+  secret: "icanhazcheeseburger",
+  saltGenerator: (secret) => secret.slice(0, 16),
 });
 
-module.exports = mongoose.model('Account', accountSchema);
-``` 
+const UserModel = mongoose.model("User", UserSchema);
+```
 
 ## Development
 
@@ -234,6 +233,10 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 4.0.2
+
+- Update documentation for subdocument encryption
 
 ### 4.0.1
 
