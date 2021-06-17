@@ -35,3 +35,5 @@ jspm_packages
 development/docker-compose.yml
 development/init-mongo.js
 
+# dıst
+dist/
