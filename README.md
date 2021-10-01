@@ -234,6 +234,11 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 4.0.3
+
+- Add typescript types
+- Update development dependencies
+
 ### 4.0.2
 
 - Update documentation for subdocument encryption
