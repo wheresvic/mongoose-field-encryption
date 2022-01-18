@@ -57,7 +57,10 @@ PostSchema.plugin(mongooseFieldEncryption, {
   fields: ["message", "references"], 
   secret: "some secret key",
   saltGenerator: function (secret) {
-    return "1234567890123456"; // should ideally use the secret to return a string of length 16, default = `const defaultSaltGenerator = secret => crypto.randomBytes(16);`, see options for more details
+    return "1234567890123456"; 
+    // should ideally use the secret to return a string of length 16, 
+    // default = `const defaultSaltGenerator = secret => crypto.randomBytes(16);`, 
+    // see options for more details
   },
 });
 
@@ -115,7 +118,10 @@ messageSchema.plugin(mongooseFieldEncryption, {
   fields: ["message", "name"],
   secret: "some secret key",
   saltGenerator: function (secret) {
-    return "1234567890123456"; // should ideally use the secret to return a string of length 16
+    return "1234567890123456";
+    // should ideally use the secret to return a string of length 16, 
+    // default = `const defaultSaltGenerator = secret => crypto.randomBytes(16);`, 
+    // see options for more details
   },
 });
 
@@ -240,9 +246,10 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
-### 4.0.4
+### 4.0.4, 4.0.5
 
-- Update README, no functional changes
+- Update README
+- Update development dependencies
 
 ### 4.0.3
 
