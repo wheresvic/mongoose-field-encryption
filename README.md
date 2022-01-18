@@ -246,10 +246,11 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
-### 4.0.4, 4.0.5
+### 4.0.4, 4.0.5, 4.0.6
 
 - Update README
 - Update development dependencies
+- No functionality affected
 
 ### 4.0.3
 
