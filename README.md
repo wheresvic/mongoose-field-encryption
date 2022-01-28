@@ -246,6 +246,14 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 5.0.0
+
+- _BREAKING:_ support encrypting falsy values, e.g. an empty string field, a field with the `0` number value, a field with the `false` boolean value, etc. See relevant test: [test/test-db.js#L631](https://github.com/wheresvic/mongoose-field-encryption/blob/a1f543c11a43fd62426efefa84255d3f14a8fd6d/test/test-db.js#L631)
+
+  Note that previously falsy values were not encrypted and stored as is. On document retrieval the plugin checks for the existence of encrypted data so this should in theory not break existing documents. Existing documents would need to be re-encrypted to take advantage of falsy encryption however.
+
+  As always, please test thoroughly before upgrading.
+
 ### 4.0.4, 4.0.5, 4.0.6, 4.0.7
 
 - Update README
