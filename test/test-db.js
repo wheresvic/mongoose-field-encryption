@@ -609,4 +609,86 @@ describe("mongoose-field-encryption plugin db", function () {
         });
     });
   }
+
+  describe("falsy values", function () {
+    it("should encrypt and decrypt falsy values", function () {
+      const FalsySchema = {
+        toEncryptString: { type: String },
+        toEncryptArray: [],
+        toEncryptDate: Date,
+        toEncryptNumber: { type: Number },
+        toEncryptBoolean: { type: Boolean },
+      };
+
+      const FalsyEncryptionSchema = new mongoose.Schema(FalsySchema);
+      FalsyEncryptionSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["toEncryptString", "toEncryptArray", "toEncryptDate", "toEncryptNumber", "toEncryptBoolean"],
+        secret: "icanhazcheezburger",
+        saltGenerator: (secret) => secret.slice(0, 16),
+      });
+
+      const FalsyEncryptionModel = mongoose.model("FalsyEncryptionModel", FalsyEncryptionSchema);
+      const sut = new FalsyEncryptionModel({
+        toEncryptString: "",
+        toEncryptArray: [],
+        toEncryptDate: 0,
+        toEncryptNumber: 0,
+        toEncryptBoolean: false,
+      });
+
+      return sut
+        .save()
+        .then(() => {
+          // console.log(sut);
+
+          expect(sut.__enc_toEncryptString).to.be.true;
+          expect(sut.toEncryptString).to.equal('37373539656562373263336135633161:9af345f139de3d5397f513a2ab105607');
+          
+          expect(sut.toEncryptArray).to.be.undefined;
+          expect(sut.__enc_toEncryptArray).to.be.true;
+          expect(sut.__enc_toEncryptArray_d).to.equal(
+            "37373539656562373263336135633161:b897c78694f3ad8533e246e21386e5d4"
+          );
+          
+          expect(sut.toEncryptDate).to.be.undefined;
+          expect(sut.__enc_toEncryptDate).to.be.true;
+          expect(sut.__enc_toEncryptDate_d).to.equal(
+            "37373539656562373263336135633161:da4568a1046a687ecdf7dc65793d44725d67efcefa88508339750a074e485f25"
+          );
+          
+          expect(sut.toEncryptNumber).to.be.undefined;
+          expect(sut.__enc_toEncryptNumber).to.be.true;
+          expect(sut.__enc_toEncryptNumber_d).to.equal(
+            "37373539656562373263336135633161:512c4a442a26f20f8ef81577d2fded37"
+          );
+          
+          expect(sut.toEncryptBoolean).to.be.undefined;
+          expect(sut.__enc_toEncryptBoolean).to.be.true;
+          expect(sut.__enc_toEncryptBoolean_d).to.equal(
+            "37373539656562373263336135633161:2eee0dc63b89e2f6bc99febe113989f3"
+          );
+
+          return FalsyEncryptionModel.findOne({ _id: sut._id });
+        })
+        .then((found) => {
+          // console.log(found);
+
+          expect(found.toEncryptString).to.equal("");
+          expect(found.__enc_toEncryptString).to.be.false;
+
+          expect(found.toEncryptArray).to.deep.equal([]);
+          expect(found.__enc_toEncryptArray).to.be.false;
+
+          expect(found.toEncryptDate).to.deep.equal(new Date(0));
+          expect(found.__enc_toEncryptDate).to.be.false;
+          
+          expect(found.toEncryptNumber).to.equal(0);
+          expect(found.__enc_toEncryptDate).to.be.false;
+          
+          expect(found.toEncryptBoolean).to.equal(false);
+          expect(found.__enc_toEncryptDate).to.be.false;
+
+        });
+    });
+  });
 });
