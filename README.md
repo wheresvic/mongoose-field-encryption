@@ -164,12 +164,14 @@ Multiple calls to the above methods have no effect, i.e. once a field is encrypt
 
 ### Searching
 
-To enable searching over the encrypted fields the `encrypt` and `decrypt` methods have also been exposed.
+To enable searching over the encrypted fields the `encrypt` and `decrypt` methods have also been exposed (see `test/test-manual-encryption` for detailed usage).
 
 ```js
 const fieldEncryption = require('mongoose-field-encryption');
+
+const defaultSaltGenerator = (secret) => crypto.randomBytes(16);
 const _hash = (secret) => crypto.createHash("sha256").update(secret).digest("hex").substring(0, 32);
-const encrypted = fieldEncryption.encrypt('some text', _hash('secret')));
+const encrypted = fieldEncryption.encrypt('some text', _hash('secret')), defaultSaltGenerator);
 const decrypted = fieldEncryption.decrypt(encrypted, _hash('secret'))); // decrypted = 'some text'
 ```
 
@@ -247,9 +249,11 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
-### 5.0.1
+### 5.0.1, 5.0.2
 
-- Update README, no functionality affected
+- Update README
+- Add test for manual encryption
+- No functionality affected
 
 ### 5.0.0
 
