@@ -167,16 +167,17 @@ Multiple calls to the above methods have no effect, i.e. once a field is encrypt
 To enable searching over the encrypted fields the `encrypt` and `decrypt` methods have also been exposed.
 
 ```js
-const fieldEncryption = require('mongoose-field-encryption')
-const encrypted = fieldEncryption.encrypt('some text', 'secret'));
-const decrypted = fieldEncryption.decrypt(encrypted, 'secret')); // decrypted = 'some text'
+const fieldEncryption = require('mongoose-field-encryption');
+const _hash = (secret) => crypto.createHash("sha256").update(secret).digest("hex").substring(0, 32);
+const encrypted = fieldEncryption.encrypt('some text', _hash('secret')));
+const decrypted = fieldEncryption.decrypt(encrypted, _hash('secret'))); // decrypted = 'some text'
 ```
 
 ### encryption of nested fields
 
 Note that while this plugin is designed to encrypt only top level fields, nested fields can be easily encrypted by creating a mongoose schema for the nested objects and adding the plugin to them.
 
-See comment for discussion: [https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776](https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776). 
+See comment for discussion: [https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776](https://github.com/wheresvic/mongoose-field-encryption/issues/34#issuecomment-577383776).
 
 _Please also note that this example is provided as a best-effort basis and this plugin does not take responsibility for what quirks mongoose might bring if you use this feature._
 
@@ -245,6 +246,10 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 5.0.1
+
+- Update README, no functionality affected
 
 ### 5.0.0
 
