@@ -249,6 +249,10 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 6.0.0
+
+- _BREAKING:_ Drop Node 6 and node 8 support
+
 ### 5.0.1, 5.0.2, 5.0.3
 
 - Update README
