@@ -1,11 +1,7 @@
-"use strict";
-
 const expect = require("chai").expect;
 
-const Promise = require("bluebird");
 const mongoose = require("mongoose");
 const { setupMongoose } = require("./setup");
-mongoose.Promise = Promise;
 mongoose.set("bufferCommands", false);
 
 const fieldEncryptionPlugin = require("../lib/mongoose-field-encryption").fieldEncryption;
@@ -19,10 +15,8 @@ describe("mongoose-field-encryption plugin db", function () {
     mongoose
       .connect(uri, {
         useNewUrlParser: true,
-        promiseLibrary: Promise,
         autoIndex: false,
         useUnifiedTopology: true,
-        keepAlive: 1,
       })
       .then(function () {
         done();
@@ -643,26 +637,26 @@ describe("mongoose-field-encryption plugin db", function () {
           // console.log(sut);
 
           expect(sut.__enc_toEncryptString).to.be.true;
-          expect(sut.toEncryptString).to.equal('37373539656562373263336135633161:9af345f139de3d5397f513a2ab105607');
-          
+          expect(sut.toEncryptString).to.equal("37373539656562373263336135633161:9af345f139de3d5397f513a2ab105607");
+
           expect(sut.toEncryptArray).to.be.undefined;
           expect(sut.__enc_toEncryptArray).to.be.true;
           expect(sut.__enc_toEncryptArray_d).to.equal(
             "37373539656562373263336135633161:b897c78694f3ad8533e246e21386e5d4"
           );
-          
+
           expect(sut.toEncryptDate).to.be.undefined;
           expect(sut.__enc_toEncryptDate).to.be.true;
           expect(sut.__enc_toEncryptDate_d).to.equal(
             "37373539656562373263336135633161:da4568a1046a687ecdf7dc65793d44725d67efcefa88508339750a074e485f25"
           );
-          
+
           expect(sut.toEncryptNumber).to.be.undefined;
           expect(sut.__enc_toEncryptNumber).to.be.true;
           expect(sut.__enc_toEncryptNumber_d).to.equal(
             "37373539656562373263336135633161:512c4a442a26f20f8ef81577d2fded37"
           );
-          
+
           expect(sut.toEncryptBoolean).to.be.undefined;
           expect(sut.__enc_toEncryptBoolean).to.be.true;
           expect(sut.__enc_toEncryptBoolean_d).to.equal(
@@ -682,14 +676,50 @@ describe("mongoose-field-encryption plugin db", function () {
 
           expect(found.toEncryptDate).to.deep.equal(new Date(0));
           expect(found.__enc_toEncryptDate).to.be.false;
-          
+
           expect(found.toEncryptNumber).to.equal(0);
           expect(found.__enc_toEncryptDate).to.be.false;
-          
+
           expect(found.toEncryptBoolean).to.equal(false);
           expect(found.__enc_toEncryptDate).to.be.false;
-
         });
+    });
+
+    it("should encrypt and decrypt empty string and record a change", async function () {
+      // given
+      const FalsyRecordSchema = {
+        toEncryptString: { type: String, required: false, default: "" },
+      };
+
+      const FalsyRecordEncryptionSchema = new mongoose.Schema(FalsyRecordSchema);
+      FalsyRecordEncryptionSchema.plugin(fieldEncryptionPlugin, {
+        fields: ["toEncryptString"],
+        secret: "icanhazcheezburger",
+        saltGenerator: (secret) => secret.slice(0, 16),
+      });
+
+      const FalsyRecordEncryptionModel = mongoose.model("FalsyRecordEncryptionModel", FalsyRecordEncryptionSchema);
+      const sut = new FalsyRecordEncryptionModel({
+        toEncryptString: "",
+      });
+
+      // when
+      await sut.save();
+
+      // then
+      expect(sut.__enc_toEncryptString).to.be.true;
+      expect(sut.toEncryptString).to.equal("37373539656562373263336135633161:9af345f139de3d5397f513a2ab105607");
+
+      const found = await FalsyRecordEncryptionModel.findOne({ _id: sut._id });
+
+      expect(found.toEncryptString).to.equal("");
+      expect(found.__enc_toEncryptString).to.be.false;
+
+      found.toEncryptString = "value";
+      await found.save();
+
+      expect(found.toEncryptString).to.equal("37373539656562373263336135633161:8335a0fb01aab80cfea6a61653a329aa");
+      expect(found.__enc_toEncryptString).to.be.true;
     });
   });
 });
