@@ -18,8 +18,8 @@ Fields which are either objects or of a different type are converted to strings 
 
 ## Requirements
 
-- Node `>=6` (Use `2.3.4` for Node `>=4.4.7 && <=6.x.x`)
-- MongoDB `>=2.6.10`
+- Node `>=12` (Use `2.3.4` for Node `>=4.4.7 && <6.x.x`, `5.0.3` for Node `>=6.x.x && <=10.x.x`)
+- MongoDB `>=4.4`
 - Mongoose `>=4.0.0`
 
 ## Installation
