@@ -4,6 +4,7 @@ const expect = require("chai").expect;
 
 const Promise = require("bluebird");
 const mongoose = require("mongoose");
+const { setupMongoose } = require("./setup");
 mongoose.Promise = Promise;
 mongoose.set("bufferCommands", false);
 
@@ -27,7 +28,7 @@ describe("mongoose-field-encryption plugin db", function () {
         done();
       });
 
-    mongoose.set("useFindAndModify", false);
+    setupMongoose(mongoose);
   });
 
   after(function (done) {

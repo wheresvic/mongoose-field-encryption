@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const expect = require("chai").expect;
 const mongoose = require("mongoose");
 const Promise = require("bluebird");
+const { setupMongoose } = require("./setup");
 const Schema = mongoose.Schema;
 
 mongoose.Promise = Promise;
@@ -23,7 +24,7 @@ describe("basic usage", function () {
         done();
       });
 
-    mongoose.set("useFindAndModify", false);
+    setupMongoose(mongoose);
   });
 
   after(function (done) {
