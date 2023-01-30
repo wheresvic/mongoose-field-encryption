@@ -249,11 +249,12 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
-### 5.0.1, 5.0.2
+### 5.0.1, 5.0.2, 5.0.3
 
 - Update README
 - Add test for manual encryption
 - No functionality affected
+- Update mongoose peer dependency
 
 ### 5.0.0
 
