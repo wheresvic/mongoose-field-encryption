@@ -249,6 +249,11 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 6.1.0
+
+- Add support for `insertMany`.
+- Update dev dependencies.
+
 ### 6.0.0
 
 - _BREAKING:_ Drop Node 6, Node 8 & Node 10 support. Note that the library should still work for node 6, 8 and 10 however it is not actively tested and supported anymore.
