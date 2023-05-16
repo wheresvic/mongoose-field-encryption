@@ -34,7 +34,6 @@ describe("basic usage", function () {
       });
 
     setupMongoose(mongoose);
-
   });
 
   after(function (done) {
@@ -43,8 +42,13 @@ describe("basic usage", function () {
     });
   });
 
+  beforeEach(function (done) {
+    Post.remove({}).then(function () {
+      done();
+    });
+  });
+
   it("should save a document", function (done) {
-    
     const post = new Post({ title: "some text", message: "hello all" });
 
     // when
@@ -67,25 +71,53 @@ describe("basic usage", function () {
   });
 
   it("should save many documents", function (done) {
-    
-    const post = [new Post({ title: "some text", message: "hello all" }), 
-                  new Post({title: "some other text", message: "hello many" }),
-                  new Post({title: "some other other text", message: "aloha!" })];
+    const posts = [
+      new Post({ title: "some text 0", message: "hello all" }),
+      new Post({ title: "some text 1", message: "hello many" }),
+      new Post({ title: "some text 2", message: "hello aloha!" }),
+    ];
 
     // when
-    Post.insertMany(post, function (err) {
+    Post.insertMany(posts, function (err) {
       // then
       if (err) {
         return done(err);
       }
 
-      expect(post[0].title).to.equal("some text");
-      expect(post[0].message).to.not.be.undefined;
-      const split = post[0].message.split(":");
-      expect(split.length).to.equal(2);
-      expect(post[0].__enc_message).to.be.true;
+      let i = 0;
+      for (const post of posts) {
+        expect(post.title).to.equal(`some text ${i}`);
+        expect(post.message).to.not.be.undefined;
+        const split = post.message.split(":");
+        expect(split.length).to.equal(2);
+        expect(post.__enc_message).to.be.true;
+        i++;
+      }
 
-      done();
+      Post.find({}).then(function (posts, err) {
+        if (err) {
+          return done(err);
+        }
+
+        try {
+          console.log(posts);
+          expect(posts).to.not.be.null;
+          expect(posts.length).to.equal(3);
+
+          let i = 0;
+          for (const post of posts) {
+            expect(post.title).to.equal(`some text ${i}`);
+            expect(post.message).to.not.be.undefined;
+            expect(post.message.startsWith("hello")).to.be.true;
+            expect(post.__enc_message).to.be.false;
+            i++;
+          }
+        } catch (err) {
+          return done(err);
+        }
+
+        done();
+      });
     });
   });
 
