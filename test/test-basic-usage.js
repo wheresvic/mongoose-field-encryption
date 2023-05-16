@@ -14,6 +14,15 @@ const mongooseFieldEncryption = require("../lib/mongoose-field-encryption").fiel
 
 const uri = process.env.URI || "mongodb://127.0.0.1:27017/mongoose-field-encryption-test";
 
+const postSchema = new Schema({
+  title: String,
+  message: String,
+});
+
+postSchema.plugin(mongooseFieldEncryption, { fields: ["message"], secret: "some secret key" });
+
+const Post = mongoose.model("Post", postSchema);
+
 describe("basic usage", function () {
   this.timeout(5000);
 
@@ -25,6 +34,7 @@ describe("basic usage", function () {
       });
 
     setupMongoose(mongoose);
+
   });
 
   after(function (done) {
@@ -34,15 +44,7 @@ describe("basic usage", function () {
   });
 
   it("should save a document", function (done) {
-    // given
-    const postSchema = new Schema({
-      title: String,
-      message: String,
-    });
-
-    postSchema.plugin(mongooseFieldEncryption, { fields: ["message"], secret: "some secret key" });
-
-    const Post = mongoose.model("Post", postSchema);
+    
     const post = new Post({ title: "some text", message: "hello all" });
 
     // when
@@ -59,6 +61,29 @@ describe("basic usage", function () {
       expect(post.__enc_message).to.be.true;
 
       console.dir(post.toObject());
+
+      done();
+    });
+  });
+
+  it("should save many documents", function (done) {
+    
+    const post = [new Post({ title: "some text", message: "hello all" }), 
+                  new Post({title: "some other text", message: "hello many" }),
+                  new Post({title: "some other other text", message: "aloha!" })];
+
+    // when
+    Post.insertMany(post, function (err) {
+      // then
+      if (err) {
+        return done(err);
+      }
+
+      expect(post[0].title).to.equal("some text");
+      expect(post[0].message).to.not.be.undefined;
+      const split = post[0].message.split(":");
+      expect(split.length).to.equal(2);
+      expect(post[0].__enc_message).to.be.true;
 
       done();
     });
