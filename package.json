@@ -1,6 +1,6 @@
 {
   "name": "mongoose-field-encryption",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "A simple symmetric encryption plugin for individual fields. Dependency free, only mongoose peer dependency.",
   "main": "lib/mongoose-field-encryption.js",
   "types": "lib/mongoose-field-encryption.d.ts",
