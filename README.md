@@ -151,6 +151,10 @@ const results = await Message.find({ name: messageToSearchWith.name });
 - `secret` (required): a string cipher (or a synchronous factory function which returns a string cipher) which is used to encrypt the data (don't lose this!)
 - `useAes256Ctr` (optional, default `false`): a boolean indicating whether the older `aes-256-ctr` algorithm should be used. Note that this is strictly a backwards compatibility feature and for new installations it is recommended to leave this at default.
 - `saltGenerator` (optional, default `const defaultSaltGenerator = secret => crypto.randomBytes(16);`): a function that should return either a `utf-8` encoded string that is 16 characters in length or a `Buffer` of length 16. This function is also passed the secret as shown in the default function example.
+- `encryptNull` (optional, default `true`): An option to enable or disable encryption of null values.
+- `notifyDecryptFails` (optional, default `true`): An option to enable or disable an exception on decryption failures. when disabled, exceptions will be inhibited, and an empty field will be returned.
+- `encryptEachArrayItem` (optional, defualt `false`): An option to tell mongoose-field-encryption how to encrypt arrays of strings. when `false`, mongoose-field-encryption will encrypt the entire array
+array as an object. when `true`, encryption would be done per each item of the array.
 
 ### Static methods
 
