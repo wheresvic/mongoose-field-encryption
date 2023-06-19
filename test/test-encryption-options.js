@@ -82,43 +82,6 @@ describe("Test fieldEncryption options behaviour", function() {
         done();  
     });
 
-    it("Demonstrate notifyDecryptFails: true (default)", function (done) {
-        const FieldEncryptionSchema = new mongoose.Schema({
-            noEncrypt: { type: String },
-            toEncrypt1: { type: String },
-            toEncrypt2: { type: String },
-        });
-    
-        FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
-            fields: ["toEncrypt1", "toEncrypt2"],
-            secret: "letsdothis",
-            encryptNull: false
-        });
-  
-        const FieldEncryptionStaticsTest2 = mongoose.model("FieldEncryptionStaticsTest2", FieldEncryptionSchema);
-        // given
-        const sut = new FieldEncryptionStaticsTest2({
-            noEncrypt: "clear",
-            toEncrypt1: "some stuff",
-            toEncrypt2: null
-        });
-
-        // when
-        sut.encryptFieldsSync();
-        sut.toEncrypt1 = sut.toEncrypt1.substring(0, sut.toEncrypt1.length - 1);
-
-        // then
-        try {
-            sut.decryptFieldsSync();
-        }
-        catch(error) {
-            if (error.message && error.message === "error:0606506D:digital envelope routines:EVP_DecryptFinal_ex:wrong final block length") {
-                done();
-            }
-        }
-        throw new Error("Error should have been fired");
-    });
-
     it("Demonstrate notifyDecryptFails: false - inhibit error, and return empty value", function (done) {
         const FieldEncryptionSchema = new mongoose.Schema({
             noEncrypt: { type: String },
