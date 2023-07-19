@@ -251,6 +251,11 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 6.2.0
+
+- _FEATURE_ Add an optional `notifyDecryptFails` configuration option (default: `true`).
+- Update dev dependencies
+
 ### 6.1.0
 
 - _FEATURE_ Add support for `insertMany` [PR #94](https://github.com/wheresvic/mongoose-field-encryption/pull/94)
