@@ -251,6 +251,10 @@ Feel free to make changes to the default docker configuration as required.
 
 ## Changelog
 
+### 6.3.0
+
+- _FEATURE_ Add an optional `encryptNull` configuration option to handle whether `null` values should be encrypted or not. Defaults to  `true` to maintain backwards compatibility.
+
 ### 6.2.0
 
 - _FEATURE_ Add an optional `notifyDecryptFails` configuration option (default: `true`).
