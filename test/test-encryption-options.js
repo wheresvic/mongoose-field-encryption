@@ -88,4 +88,74 @@ describe("Test fieldEncryption options behaviour", function () {
 
     done(new Error("should have thrown an exception"));
   });
+  
+  it("Demonstrate encryptNull: false option", function (done) {
+        const FieldEncryptionSchema = new mongoose.Schema({
+            noEncrypt: { type: String },
+            toEncrypt1: { type: String },
+            toEncrypt2: { type: String },
+        });
+    
+        FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
+            fields: ["toEncrypt1", "toEncrypt2"],
+            secret: "letsdothis",
+            encryptNull: false, 
+        });
+
+        const FieldEncryptionOptionsTest3 = mongoose.model("FieldEncryptionOptionsTest3", FieldEncryptionSchema);
+        const sut = new FieldEncryptionOptionsTest3({
+            noEncrypt: "clear",
+            toEncrypt1: "some stuff",
+            toEncrypt2: null
+        });
+    
+        // when
+        sut.encryptFieldsSync();
+
+        // then
+        expect(sut.noEncrypt).to.equal("clear");
+        expect(sut.__enc_noEncrypt).to.be.undefined;
+
+        expect(sut.__enc_toEncrypt1).to.be.true;
+        expect(sut.toEncrypt1).to.not.eql("some stuff");
+
+        expect(sut.__enc_toEncrypt2).to.be.undefined;
+        expect(sut.toEncrypt2).to.eql(null);
+        done();
+    });
+
+    it("Demonstrate encryptNull: true option (Default behaviour)", function (done) {
+        const FieldEncryptionSchema = new mongoose.Schema({
+            noEncrypt: { type: String },
+            toEncrypt1: { type: String },
+            toEncrypt2: { type: String },
+        });
+    
+        FieldEncryptionSchema.plugin(fieldEncryptionPlugin, {
+            fields: ["toEncrypt1", "toEncrypt2"],
+            secret: "letsdothis", 
+        });
+
+        const FieldEncryptionOptionsTest4 = mongoose.model("FieldEncryptionOptionsTest4", FieldEncryptionSchema);
+        const sut = new FieldEncryptionOptionsTest4({
+            noEncrypt: "clear",
+            toEncrypt1: "some stuff",
+            toEncrypt2: null
+        });
+    
+        // when
+        sut.encryptFieldsSync();
+
+        // then
+        expect(sut.noEncrypt).to.equal("clear");
+        expect(sut.__enc_noEncrypt).to.be.undefined;
+
+        expect(sut.__enc_toEncrypt1).to.be.true;
+        expect(sut.toEncrypt1).to.not.eql("some stuff");
+
+        expect(sut.__enc_toEncrypt2).to.be.true;
+        expect(sut.toEncrypt2).to.be.undefined;
+        expect(sut.__enc_toEncrypt2_d).to.exist;
+        done();  
+    });
 });
