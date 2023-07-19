@@ -102,8 +102,8 @@ describe("Test fieldEncryption options behaviour", function () {
             encryptNull: false, 
         });
 
-        const FieldEncryptionOptionsTest1 = mongoose.model("FieldEncryptionOptionsTest1", FieldEncryptionSchema);
-        const sut = new FieldEncryptionOptionsTest1({
+        const FieldEncryptionOptionsTest3 = mongoose.model("FieldEncryptionOptionsTest3", FieldEncryptionSchema);
+        const sut = new FieldEncryptionOptionsTest3({
             noEncrypt: "clear",
             toEncrypt1: "some stuff",
             toEncrypt2: null
@@ -136,8 +136,8 @@ describe("Test fieldEncryption options behaviour", function () {
             secret: "letsdothis", 
         });
 
-        const FieldEncryptionOptionsTest2 = mongoose.model("FieldEncryptionOptionsTest2", FieldEncryptionSchema);
-        const sut = new FieldEncryptionOptionsTest2({
+        const FieldEncryptionOptionsTest4 = mongoose.model("FieldEncryptionOptionsTest4", FieldEncryptionSchema);
+        const sut = new FieldEncryptionOptionsTest4({
             noEncrypt: "clear",
             toEncrypt1: "some stuff",
             toEncrypt2: null
