@@ -26,51 +26,36 @@ const Post = mongoose.model("Post", postSchema);
 describe("basic usage", function () {
   this.timeout(5000);
 
-  before(function (done) {
-    mongoose
-      .connect(uri, { useNewUrlParser: true, promiseLibrary: Promise, autoIndex: false, useUnifiedTopology: true })
-      .then(function () {
-        done();
-      });
+  before(async function () {
+    await mongoose.connect(uri, { useNewUrlParser: true, autoIndex: false, useUnifiedTopology: true });
 
     setupMongoose(mongoose);
   });
 
-  after(function (done) {
-    mongoose.disconnect().then(function () {
-      done();
-    });
+  after(async function () {
+    await mongoose.disconnect();
   });
 
-  beforeEach(function (done) {
-    Post.remove({}).then(function () {
-      done();
-    });
+  beforeEach(async function () {
+    await Post.deleteMany({});
   });
 
-  it("should save a document", function (done) {
+  it("should save a document", async function () {
     const post = new Post({ title: "some text", message: "hello all" });
 
     // when
-    post.save(function (err) {
-      // then
-      if (err) {
-        return done(err);
-      }
+    await post.save();
 
-      expect(post.title).to.equal("some text");
-      expect(post.message).to.not.be.undefined;
-      const split = post.message.split(":");
-      expect(split.length).to.equal(2);
-      expect(post.__enc_message).to.be.true;
+    expect(post.title).to.equal("some text");
+    expect(post.message).to.not.be.undefined;
+    const split = post.message.split(":");
+    expect(split.length).to.equal(2);
+    expect(post.__enc_message).to.be.true;
 
-      console.dir(post.toObject());
-
-      done();
-    });
+    console.dir(post.toObject());
   });
 
-  it("should save many documents", function (done) {
+  it("should save many documents", async function () {
     const posts = [
       new Post({ title: "some text 0", message: "hello all" }),
       new Post({ title: "some text 1", message: "hello many" }),
@@ -78,47 +63,34 @@ describe("basic usage", function () {
     ];
 
     // when
-    Post.insertMany(posts, function (err) {
-      // then
-      if (err) {
-        return done(err);
-      }
+    await Post.insertMany(posts);
+
+    let i = 0;
+    for (const post of posts) {
+      expect(post.title).to.equal(`some text ${i}`);
+      expect(post.message).to.not.be.undefined;
+      const split = post.message.split(":");
+      expect(split.length).to.equal(2);
+      expect(post.__enc_message).to.be.true;
+      i++;
+    }
+
+    {
+      const posts = await Post.find({});
+
+      console.log(posts);
+      expect(posts).to.not.be.null;
+      expect(posts.length).to.equal(3);
 
       let i = 0;
       for (const post of posts) {
         expect(post.title).to.equal(`some text ${i}`);
         expect(post.message).to.not.be.undefined;
-        const split = post.message.split(":");
-        expect(split.length).to.equal(2);
-        expect(post.__enc_message).to.be.true;
+        expect(post.message.startsWith("hello")).to.be.true;
+        expect(post.__enc_message).to.be.false;
         i++;
       }
-
-      Post.find({}).then(function (posts, err) {
-        if (err) {
-          return done(err);
-        }
-
-        try {
-          console.log(posts);
-          expect(posts).to.not.be.null;
-          expect(posts.length).to.equal(3);
-
-          let i = 0;
-          for (const post of posts) {
-            expect(post.title).to.equal(`some text ${i}`);
-            expect(post.message).to.not.be.undefined;
-            expect(post.message.startsWith("hello")).to.be.true;
-            expect(post.__enc_message).to.be.false;
-            i++;
-          }
-        } catch (err) {
-          return done(err);
-        }
-
-        done();
-      });
-    });
+    }
   });
 
   it("should search for a document on an encrypted field", function (done) {

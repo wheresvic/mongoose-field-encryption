@@ -18,9 +18,9 @@ Fields which are either objects or of a different type are converted to strings 
 
 ## Requirements
 
-- Node `>=12` (Use `2.3.4` for Node `>=4.4.7 && <6.x.x`, `5.0.3` for Node `>=6.x.x && <=10.x.x`)
+- Node `>=14` (Use `2.3.4` for Node `>=4.4.7 && <6.x.x`, `5.0.3` for Node `>=6.x.x && <=12.x.x`)
 - MongoDB `>=4.4`
-- Mongoose `>=4.0.0`
+- Mongoose `>=7.0.0` (use `6.3.0` for Mongoose `<7.0.0`)
 
 ## Installation
 
@@ -89,7 +89,7 @@ The resulting documents will have the following format:
 }
 ```
 
-`find` works transparently and you can make new documents as normal, but you should not use the `lean` option on a find if you want the fields of the document to be decrypted. `findOne`, `findById` and `save` also all work as normal. `update` works _only for string fields_ and you would also need to manually set the `__enc_` field value to false if you're updating an encrypted field.
+`find` works transparently and you can make new documents as normal, but you should not use the `lean` option on a find if you want the fields of the document to be decrypted. `findOne`, `findById` and `save` also all work as normal. `updateOne` works _only for string fields_ and you would also need to manually set the `__enc_` field value to false if you're updating an encrypted field. Currently `updateMany` is not supported.
 
 From the mongoose package documentation: _Note that findAndUpdate/Remove do not execute any hooks or validation before making the change in the database. If you need hooks and validation, first query for the document and then save it._
 
@@ -250,6 +250,11 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 7.0.0
+
+- _BREAKING:_ Update mongoose peer dependency to 7.0.0 which drops `update` and replaces it with `updateOne`. Use previous version if you are still on monogoose `6.x`.
+- _BREAKING:_ Drop node 12 support. Mongoose 7.x requires Node 14.
 
 ### 6.3.0
 
