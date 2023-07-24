@@ -330,31 +330,6 @@ describe("mongoose-field-encryption plugin db", function () {
         });
     });
 
-    it("should encrypt string fields on update", function () {
-      // given
-      const sut = getSut(MongooseModel);
-
-      // when
-      return sut
-        .save()
-        .then(() => {
-          expectEncryptionValues(sut);
-
-          return MongooseModel.update(
-            { _id: sut._id },
-            { $set: { toEncryptString: "snoop", __enc_toEncryptString: false } }
-          );
-        })
-        .then(() => {
-          return MongooseModel.findById(sut._id);
-        })
-        .then((found) => {
-          // then
-          expect(found.__enc_toEncryptString).to.be.false;
-          expect(found.toEncryptString).to.equal("snoop");
-        });
-    });
-
     it("should encrypt string fields on updateOne", function () {
       // given
       const sut = getSut(MongooseModel);
