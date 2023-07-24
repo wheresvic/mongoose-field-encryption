@@ -18,7 +18,7 @@ Fields which are either objects or of a different type are converted to strings 
 
 ## Requirements
 
-- Node `>=14` (Use `2.3.4` for Node `>=4.4.7 && <6.x.x`, `5.0.3` for Node `>=6.x.x && <=12.x.x`)
+- Node `>=14` (Use `2.3.4` for Node `>=4.4.7 && <6.x.x`, `5.0.3` for Node `>=6.x.x && <=10.x.x`, `6.3.0` for Node `12.x.x`)
 - MongoDB `>=4.4`
 - Mongoose `>=7.0.0` (use `6.3.0` for Mongoose `<7.0.0`)
 
@@ -250,6 +250,11 @@ Feel free to make changes to the default docker configuration as required.
 - `npm publish`
 
 ## Changelog
+
+### 7.0.1
+
+- Update README
+- No functionality affected
 
 ### 7.0.0
 
